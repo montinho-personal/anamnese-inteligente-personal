@@ -176,7 +176,7 @@ export const PERGUNTAS: Pergunta[] = [
 
   // OBJETIVOS
   {
-    id: "objetivos", secao: "objetivos", titulo: "Quais são seus objetivos?", descricao: "Selecione todos que se aplicam",
+    id: "objetivos", secao: "objetivos", titulo: "Quais são seus objetivos?", descricao: "Pode escolher mais de uma opção",
     tipo: "escolha_multipla", obrigatoria: true,
     opcoes: [
       { valor: "emagrecimento", label: "Emagrecimento" },
@@ -239,7 +239,7 @@ export const PERGUNTAS: Pergunta[] = [
     ],
   },
   {
-    id: "zona_repeticoes", secao: "historico", titulo: "Zona de repetições preferida", tipo: "escolha_multipla",
+    id: "zona_repeticoes", secao: "historico", titulo: "Zona de repetições preferida", descricao: "Pode escolher mais de uma opção", tipo: "escolha_multipla",
     opcoes: [
       { valor: "6-8", label: "6-8 reps" },
       { valor: "8-10", label: "8-10 reps" },
@@ -270,7 +270,7 @@ export const PERGUNTAS: Pergunta[] = [
     ],
   },
   {
-    id: "equipamentos_casa", secao: "local", titulo: "Quais equipamentos você tem em casa?", tipo: "escolha_multipla",
+    id: "equipamentos_casa", secao: "local", titulo: "Quais equipamentos você tem em casa?", descricao: "Pode escolher mais de uma opção", tipo: "escolha_multipla",
     opcoes: [
       { valor: "halteres", label: "Halteres" },
       { valor: "barra", label: "Barra e anilhas" },
@@ -291,7 +291,7 @@ export const PERGUNTAS: Pergunta[] = [
   // TRIAGEM ORTOPÉDICA
   {
     id: "orto_regioes", secao: "ortopedica", titulo: "Você sente ou já sentiu dor em alguma dessas regiões?",
-    descricao: "Selecione todas. Se não tem dores, pule.", tipo: "escolha_multipla",
+    descricao: "Pode escolher mais de uma opção. Se não tem dores, clique em Continuar.", tipo: "escolha_multipla",
     opcoes: REGIOES_ORTO,
   },
   ...REGIOES_ORTO.flatMap(perguntasOrtoRegiao),
@@ -300,20 +300,20 @@ export const PERGUNTAS: Pergunta[] = [
   {
     id: "cardio_itens", secao: "cardiovascular",
     titulo: "Você apresenta ou já apresentou algum destes sintomas/condições?",
-    descricao: "Selecione todos que se aplicam. Sua segurança é prioridade.",
+    descricao: "Pode escolher mais de uma opção. Sua segurança é prioridade.",
     tipo: "escolha_multipla",
-    opcoes: CARDIO_ITENS,
-    gatilhoAlerta: (valor) => Array.isArray(valor) && valor.length > 0,
+    opcoes: [...CARDIO_ITENS, { valor: "nenhum", label: "Nenhum destes" }],
+    gatilhoAlerta: (valor) => Array.isArray(valor) && valor.length > 0 && !valor.includes("nenhum"),
   },
   {
     id: "cardio_detalhe", secao: "cardiovascular", titulo: "Pode dar mais detalhes sobre o que marcou?", tipo: "textarea",
     dica: "Ex.: tenho hipertensão controlada com medicamento desde 2020, pressão normal é 130/85.",
-    condicao: (r) => Array.isArray(r["cardio_itens"]) && (r["cardio_itens"] as string[]).length > 0,
+    condicao: (r) => Array.isArray(r["cardio_itens"]) && (r["cardio_itens"] as string[]).some(v => v !== "nenhum"),
   },
   {
     id: "cardio_liberacao", secao: "cardiovascular", titulo: "Tem liberação médica para atividade física?", tipo: "sim_nao",
     dica: "Se não tiver, recomendamos consultar um médico antes de iniciar o treino.",
-    condicao: (r) => Array.isArray(r["cardio_itens"]) && (r["cardio_itens"] as string[]).length > 0,
+    condicao: (r) => Array.isArray(r["cardio_itens"]) && (r["cardio_itens"] as string[]).some(v => v !== "nenhum"),
   },
 
   // MOBILIDADE
