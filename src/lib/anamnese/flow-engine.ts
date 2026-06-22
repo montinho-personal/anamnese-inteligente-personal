@@ -317,18 +317,41 @@ export const PERGUNTAS: Pergunta[] = [
   },
 
   // MOBILIDADE
-  ...[
-    { id: "mob_agachamento", label: "agachamento profundo" },
-    { id: "mob_dorsiflexao", label: "dorsiflexão (tornozelo)" },
-    { id: "mob_posterior", label: "flexibilidade posterior (alcançar os pés)" },
-    { id: "mob_toracica", label: "mobilidade torácica" },
-    { id: "mob_ombro", label: "mobilidade de ombro" },
-  ].map<Pergunta>((m) => ({
-    id: m.id, secao: "mobilidade",
-    titulo: `Como você avalia sua ${m.label}?`,
+  {
+    id: "mob_agachamento", secao: "mobilidade",
+    titulo: "Como você avalia seu agachamento profundo?",
+    descricao: "Teste rápido: fique em pé, pés na largura dos ombros e tente agachar fundo mantendo o calcanhar no chão e as costas eretas. Consegue descer até o fundo sem dor ou desequilíbrio?",
+    tipo: "escala", escalaMin: 1, escalaMax: 5,
+    escalaLabelMin: "Muito limitado", escalaLabelMax: "Excelente",
+  },
+  {
+    id: "mob_dorsiflexao", secao: "mobilidade",
+    titulo: "Como você avalia a mobilidade do seu tornozelo?",
+    descricao: "Teste rápido: fique de frente para uma parede, coloque o pé a ~10cm dela e tente tocar o joelho na parede sem tirar o calcanhar do chão. Consegue tocar sem o calcanhar levantar?",
     tipo: "escala", escalaMin: 1, escalaMax: 5,
     escalaLabelMin: "Muito limitada", escalaLabelMax: "Excelente",
-  })),
+  },
+  {
+    id: "mob_posterior", secao: "mobilidade",
+    titulo: "Como você avalia sua flexibilidade posterior (costas e pernas)?",
+    descricao: "Teste rápido: em pé, pernas estendidas, tente tocar as pontas dos dedos nos pés sem dobrar os joelhos. Onde você chega? 1 = longe das canelas, 5 = palma da mão no chão.",
+    tipo: "escala", escalaMin: 1, escalaMax: 5,
+    escalaLabelMin: "Muito limitada", escalaLabelMax: "Excelente",
+  },
+  {
+    id: "mob_toracica", secao: "mobilidade",
+    titulo: "Como você avalia a mobilidade da sua coluna torácica (meio das costas)?",
+    descricao: "Teste rápido: sente em uma cadeira, cruze os braços no peito e tente girar o tronco para cada lado. Consegue girar bastante sem dor ou sensação de trava nas costas?",
+    tipo: "escala", escalaMin: 1, escalaMax: 5,
+    escalaLabelMin: "Muito limitada", escalaLabelMax: "Excelente",
+  },
+  {
+    id: "mob_ombro", secao: "mobilidade",
+    titulo: "Como você avalia a mobilidade dos seus ombros?",
+    descricao: "Teste rápido: tente passar uma mão por cima do ombro e a outra por baixo das costas tentando se tocar. Depois repita invertendo. Consegue aproximar as mãos ou sente travamento?",
+    tipo: "escala", escalaMin: 1, escalaMax: 5,
+    escalaLabelMin: "Muito limitada", escalaLabelMax: "Excelente",
+  },
 
   // RECUPERAÇÃO
   {
