@@ -1,11 +1,9 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 
-export default async function Home() {
-  const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+// The middleware handles auth-based redirects for "/" → "/dashboard" or "/login".
+// This fallback ensures the route always redirects even without middleware.
+export const dynamic = "force-dynamic";
 
-  redirect(user ? "/dashboard" : "/login");
+export default function Home() {
+  redirect("/login");
 }
