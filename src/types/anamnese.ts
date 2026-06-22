@@ -27,6 +27,7 @@ export interface Pergunta {
   escalaLabelMin?: string;
   escalaLabelMax?: string;
   placeholder?: string;
+  dica?: string;
   obrigatoria?: boolean;
   // Conditional: only show this question if the predicate over current answers is true.
   condicao?: (respostas: Respostas) => boolean;

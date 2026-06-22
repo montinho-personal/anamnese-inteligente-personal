@@ -59,6 +59,9 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
             }}
             className="h-14 text-lg"
           />
+          {pergunta.dica && (
+            <p className="text-sm text-slate-400 leading-relaxed">💡 {pergunta.dica}</p>
+          )}
           <Button onClick={commitTexto} disabled={pergunta.obrigatoria && !texto.trim()} className="w-full h-12">
             Continuar
           </Button>
@@ -75,6 +78,9 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
             onChange={(e) => setTexto(e.target.value)}
             className="min-h-[120px] text-base"
           />
+          {pergunta.dica && (
+            <p className="text-sm text-slate-400 leading-relaxed">💡 {pergunta.dica}</p>
+          )}
           <Button onClick={commitTexto} disabled={pergunta.obrigatoria && !texto.trim()} className="w-full h-12">
             Continuar
           </Button>
@@ -83,22 +89,27 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
 
     case "sim_nao":
       return (
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { v: "sim", label: "Sim" },
-            { v: "nao", label: "Não" },
-          ].map((o) => (
-            <button
-              key={o.v}
-              onClick={() => escolhaUnica(o.v)}
-              className={cn(
-                "rounded-xl border-2 p-5 text-lg font-medium transition-all",
-                valor === o.v ? "border-indigo-600 bg-indigo-50 text-indigo-700" : "border-slate-200 hover:border-indigo-300",
-              )}
-            >
-              {o.label}
-            </button>
-          ))}
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { v: "sim", label: "Sim" },
+              { v: "nao", label: "Não" },
+            ].map((o) => (
+              <button
+                key={o.v}
+                onClick={() => escolhaUnica(o.v)}
+                className={cn(
+                  "rounded-xl border-2 p-5 text-lg font-medium transition-all",
+                  valor === o.v ? "border-indigo-600 bg-indigo-50 text-indigo-700" : "border-slate-200 hover:border-indigo-300",
+                )}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+          {pergunta.dica && (
+            <p className="text-sm text-slate-400 leading-relaxed">💡 {pergunta.dica}</p>
+          )}
         </div>
       );
 

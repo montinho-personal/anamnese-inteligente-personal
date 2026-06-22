@@ -82,6 +82,7 @@ function perguntasOrtoRegiao(regiao: { valor: string; label: string }): Pergunta
       titulo: "Qual o CID ou nome do diagnóstico?",
       tipo: "texto",
       placeholder: "Ex.: M75.1, tendinite...",
+      dica: "Ex.: tendinite no manguito rotador, hérnia de disco L4-L5, condromalácia patelar. Se não souber o CID, só o nome já ajuda.",
       condicao: (r) => cond(r) && r[`orto_${regiao.valor}_diagnostico`] === "sim",
     },
     {
@@ -97,6 +98,7 @@ function perguntasOrtoRegiao(regiao: { valor: string; label: string }): Pergunta
       titulo: "Onde exatamente é a dor?",
       tipo: "texto",
       placeholder: "Descreva o ponto exato",
+      dica: "Ex.: parte anterior do joelho, lado de fora do ombro, base do polegar...",
       condicao: (r) => cond(r) && r[`orto_${regiao.valor}_dor_atual`] === "sim",
     },
     {
@@ -104,6 +106,7 @@ function perguntasOrtoRegiao(regiao: { valor: string; label: string }): Pergunta
       secao: "ortopedica",
       titulo: "O que piora a dor?",
       tipo: "texto",
+      dica: "Ex.: subir escadas, levantar o braço acima da cabeça, sentar por muito tempo...",
       condicao: (r) => cond(r) && r[`orto_${regiao.valor}_dor_atual`] === "sim",
     },
     {
@@ -111,6 +114,7 @@ function perguntasOrtoRegiao(regiao: { valor: string; label: string }): Pergunta
       secao: "ortopedica",
       titulo: "O que melhora a dor?",
       tipo: "texto",
+      dica: "Ex.: gelo, repouso, anti-inflamatório, alongamento, calor...",
       condicao: (r) => cond(r) && r[`orto_${regiao.valor}_dor_atual`] === "sim",
     },
   ];
@@ -133,8 +137,8 @@ const CARDIO_ITENS: { valor: string; label: string }[] = [
 // ---------------------------------------------------------------------------
 export const PERGUNTAS: Pergunta[] = [
   // IDENTIFICAÇÃO
-  { id: "nome", secao: "identificacao", titulo: "Qual é o seu nome?", tipo: "texto", obrigatoria: true, placeholder: "Seu nome completo" },
-  { id: "idade", secao: "identificacao", titulo: "Quantos anos você tem?", tipo: "numero", obrigatoria: true },
+  { id: "nome", secao: "identificacao", titulo: "Qual é o seu nome?", tipo: "texto", obrigatoria: true, placeholder: "Seu nome completo", dica: "Ex.: João Silva" },
+  { id: "idade", secao: "identificacao", titulo: "Quantos anos você tem?", tipo: "numero", obrigatoria: true, dica: "Ex.: 28" },
   {
     id: "sexo", secao: "identificacao", titulo: "Sexo biológico", tipo: "escolha_unica", obrigatoria: true,
     opcoes: [
@@ -143,9 +147,9 @@ export const PERGUNTAS: Pergunta[] = [
       { valor: "Outro", label: "Outro" },
     ],
   },
-  { id: "peso", secao: "identificacao", titulo: "Qual o seu peso atual? (kg)", tipo: "numero", obrigatoria: true },
-  { id: "altura", secao: "identificacao", titulo: "Qual a sua altura? (cm)", tipo: "numero", obrigatoria: true },
-  { id: "profissao", secao: "identificacao", titulo: "Qual a sua profissão?", tipo: "texto" },
+  { id: "peso", secao: "identificacao", titulo: "Qual o seu peso atual? (kg)", tipo: "numero", obrigatoria: true, dica: "Ex.: 75 — use o peso mais recente, mesmo que aproximado" },
+  { id: "altura", secao: "identificacao", titulo: "Qual a sua altura? (cm)", tipo: "numero", obrigatoria: true, dica: "Ex.: 175 — em centímetros, sem ponto ou vírgula" },
+  { id: "profissao", secao: "identificacao", titulo: "Qual a sua profissão?", tipo: "texto", dica: "Ex.: Analista de sistemas, professor, motorista..." },
   {
     id: "rotina_trabalho", secao: "identificacao", titulo: "Como é sua rotina de trabalho?", tipo: "escolha_unica",
     opcoes: [
@@ -155,7 +159,7 @@ export const PERGUNTAS: Pergunta[] = [
       { valor: "variada", label: "Variada" },
     ],
   },
-  { id: "tem_filhos", secao: "identificacao", titulo: "Você tem filhos?", tipo: "sim_nao" },
+  { id: "tem_filhos", secao: "identificacao", titulo: "Você tem filhos?", tipo: "sim_nao", dica: "Isso ajuda a entender sua disponibilidade de tempo para treinar." },
   {
     id: "dias_disponiveis", secao: "identificacao", titulo: "Quantos dias por semana você pode treinar?", tipo: "escolha_unica", obrigatoria: true,
     opcoes: ["1", "2", "3", "4", "5", "6", "7"].map((d) => ({ valor: d, label: `${d} dia(s)` })),
@@ -186,23 +190,28 @@ export const PERGUNTAS: Pergunta[] = [
   },
   {
     id: "emagrecimento_meta", secao: "objetivos", titulo: "Quantos kg você deseja perder?", tipo: "numero",
+    dica: "Ex.: 10 — coloque uma meta realista, isso ajuda a montar o plano certo.",
     condicao: (r) => tem(r, "objetivos", "emagrecimento"),
   },
   {
     id: "hipertrofia_foco", secao: "objetivos", titulo: "Quais grupos musculares são prioridade?", tipo: "texto",
     placeholder: "Ex.: pernas, costas, braços",
+    dica: "Ex.: pernas e glúteos — coloque em ordem de prioridade se quiser.",
     condicao: (r) => tem(r, "objetivos", "hipertrofia"),
   },
   {
     id: "forca_lift", secao: "objetivos", titulo: "Há algum levantamento específico que quer melhorar?", tipo: "texto",
+    dica: "Ex.: quero aumentar meu agachamento de 80kg para 120kg.",
     condicao: (r) => tem(r, "objetivos", "forca"),
   },
   {
     id: "reabilitacao_detalhe", secao: "objetivos", titulo: "O que precisa reabilitar?", tipo: "textarea",
+    dica: "Ex.: tendinite no ombro direito há 6 meses, já fiz fisioterapia mas ainda limita alguns movimentos.",
     condicao: (r) => tem(r, "objetivos", "reabilitacao"),
   },
   {
     id: "performance_esporte", secao: "objetivos", titulo: "Para qual esporte/modalidade?", tipo: "texto",
+    dica: "Ex.: futebol amador, corrida de rua 10km, natação, crossfit...",
     condicao: (r) => tem(r, "objetivos", "performance"),
   },
 
@@ -217,10 +226,10 @@ export const PERGUNTAS: Pergunta[] = [
       { valor: "mais_3a", label: "Mais de 3 anos" },
     ],
   },
-  { id: "exercicios_favoritos", secao: "historico", titulo: "Quais exercícios você mais gosta?", tipo: "texto" },
-  { id: "exercicios_nao_gosta", secao: "historico", titulo: "Quais você não gosta?", tipo: "texto" },
-  { id: "exercicios_medo", secao: "historico", titulo: "Algum exercício te causa medo?", tipo: "texto" },
-  { id: "exercicios_desconforto", secao: "historico", titulo: "Algum exercício causa desconforto físico?", tipo: "texto" },
+  { id: "exercicios_favoritos", secao: "historico", titulo: "Quais exercícios você mais gosta?", tipo: "texto", dica: "Ex.: agachamento, supino, corrida, natação..." },
+  { id: "exercicios_nao_gosta", secao: "historico", titulo: "Quais você não gosta?", tipo: "texto", dica: "Ex.: burpee, leg press, esteira. Seja honesto — isso ajuda muito!" },
+  { id: "exercicios_medo", secao: "historico", titulo: "Algum exercício te causa medo?", tipo: "texto", dica: "Ex.: agachamento com barra, levantamento terra. Se não, pode escrever 'Nenhum'." },
+  { id: "exercicios_desconforto", secao: "historico", titulo: "Algum exercício causa desconforto físico?", tipo: "texto", dica: "Ex.: rosca direta dói no cotovelo, agachamento dói no joelho. Se nenhum, escreva 'Nenhum'." },
   {
     id: "maquinas_ou_livre", secao: "historico", titulo: "Você prefere máquinas ou peso livre?", tipo: "escolha_unica",
     opcoes: [
@@ -240,13 +249,14 @@ export const PERGUNTAS: Pergunta[] = [
       { valor: "20+", label: "20+ reps" },
     ],
   },
-  { id: "conhece_tecnicas", secao: "historico", titulo: "Conhece técnicas avançadas (drop-set, rest-pause, etc)?", tipo: "sim_nao" },
+  { id: "conhece_tecnicas", secao: "historico", titulo: "Conhece técnicas avançadas (drop-set, rest-pause, etc)?", tipo: "sim_nao", dica: "Isso ajuda a calibrar a complexidade do seu treino." },
   {
     id: "tecnica_favorita", secao: "historico", titulo: "Qual sua técnica avançada favorita?", tipo: "texto",
+    dica: "Ex.: drop-set, rest-pause, cluster sets, bi-set...",
     condicao: (r) => r["conhece_tecnicas"] === "sim",
   },
-  { id: "ja_personal", secao: "historico", titulo: "Já treinou com personal trainer?", tipo: "sim_nao" },
-  { id: "ja_consultoria", secao: "historico", titulo: "Já fez consultoria online?", tipo: "sim_nao" },
+  { id: "ja_personal", secao: "historico", titulo: "Já treinou com personal trainer?", tipo: "sim_nao", dica: "Presencial ou online, conta qualquer experiência anterior." },
+  { id: "ja_consultoria", secao: "historico", titulo: "Já fez consultoria online?", tipo: "sim_nao", dica: "Programas de treino comprados pela internet também contam." },
 
   // LOCAL DE TREINO
   {
@@ -274,6 +284,7 @@ export const PERGUNTAS: Pergunta[] = [
   },
   {
     id: "equipamentos_limitados", secao: "local", titulo: "O local tem alguma limitação de equipamentos?", tipo: "textarea",
+    dica: "Ex.: não tem barra fixa, só tem halteres até 20kg, sem smith machine...",
     condicao: (r) => ["condominio", "predio", "studio"].includes(String(r["local_treino"])),
   },
 
@@ -296,10 +307,12 @@ export const PERGUNTAS: Pergunta[] = [
   },
   {
     id: "cardio_detalhe", secao: "cardiovascular", titulo: "Pode dar mais detalhes sobre o que marcou?", tipo: "textarea",
+    dica: "Ex.: tenho hipertensão controlada com medicamento desde 2020, pressão normal é 130/85.",
     condicao: (r) => Array.isArray(r["cardio_itens"]) && (r["cardio_itens"] as string[]).length > 0,
   },
   {
     id: "cardio_liberacao", secao: "cardiovascular", titulo: "Tem liberação médica para atividade física?", tipo: "sim_nao",
+    dica: "Se não tiver, recomendamos consultar um médico antes de iniciar o treino.",
     condicao: (r) => Array.isArray(r["cardio_itens"]) && (r["cardio_itens"] as string[]).length > 0,
   },
 
@@ -373,14 +386,15 @@ export const PERGUNTAS: Pergunta[] = [
   { id: "fumante", secao: "nutricao", titulo: "Você fuma?", tipo: "sim_nao" },
 
   // COMPORTAMENTO
-  { id: "motivacao_principal", secao: "comportamento", titulo: "Qual sua principal motivação para treinar?", tipo: "textarea", obrigatoria: true },
-  { id: "o_que_desmotiva", secao: "comportamento", titulo: "O que costuma te desmotivar?", tipo: "textarea" },
-  { id: "ja_largou", secao: "comportamento", titulo: "Já largou a academia antes?", tipo: "sim_nao" },
+  { id: "motivacao_principal", secao: "comportamento", titulo: "Qual sua principal motivação para treinar?", tipo: "textarea", obrigatoria: true, dica: "Ex.: quero emagrecer para me sentir bem nas fotos da formatura em dezembro, quero ter energia para brincar com meus filhos..." },
+  { id: "o_que_desmotiva", secao: "comportamento", titulo: "O que costuma te desmotivar?", tipo: "textarea", dica: "Ex.: cansaço após o trabalho, falta de resultado rápido, academia lotada, dor muscular excessiva..." },
+  { id: "ja_largou", secao: "comportamento", titulo: "Já largou a academia antes?", tipo: "sim_nao", dica: "Não tem julgamento aqui — isso ajuda a montar estratégias para você não desistir desta vez." },
   {
     id: "motivo_largou", secao: "comportamento", titulo: "Por que largou da última vez?", tipo: "textarea",
+    dica: "Ex.: mudei de emprego e perdi o horário, me machuquei, achei entediante, resultado demorou...",
     condicao: (r) => r["ja_largou"] === "sim",
   },
-  { id: "principais_dificuldades", secao: "comportamento", titulo: "Quais suas principais dificuldades para manter a rotina?", tipo: "textarea" },
+  { id: "principais_dificuldades", secao: "comportamento", titulo: "Quais suas principais dificuldades para manter a rotina?", tipo: "textarea", dica: "Ex.: falta de tempo, viagens frequentes, preguiça à noite, dificuldade em acordar cedo..." },
 ];
 
 // ---------------------------------------------------------------------------
