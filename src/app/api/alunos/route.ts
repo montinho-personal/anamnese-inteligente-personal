@@ -13,10 +13,10 @@ const alunoSchema = z.object({
   email: z.string().email().optional().or(z.literal("")),
   telefone: z.string().optional(),
   whatsapp: z.string().optional(),
-  idade: z.coerce.number().int().positive().optional(),
-  sexo: z.enum(["M", "F", "Outro"]).optional(),
-  altura_cm: z.coerce.number().int().positive().optional(),
-  peso_kg: z.coerce.number().positive().optional(),
+  idade: z.preprocess((v) => (v === "" || v == null ? undefined : Number(v)), z.number().int().positive().optional()),
+  sexo: z.enum(["M", "F", "Outro"]).optional().or(z.literal("")),
+  altura_cm: z.preprocess((v) => (v === "" || v == null ? undefined : Number(v)), z.number().int().positive().optional()),
+  peso_kg: z.preprocess((v) => (v === "" || v == null ? undefined : Number(v)), z.number().positive().optional()),
   observacoes: z.string().optional(),
 });
 
@@ -46,6 +46,7 @@ export async function POST(req: Request) {
     .insert({
       ...parsed.data,
       email: parsed.data.email || null,
+      sexo: parsed.data.sexo || null,
       personal_id: personal.id,
     })
     .select("*")
