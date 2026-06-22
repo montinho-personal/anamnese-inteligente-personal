@@ -4,7 +4,7 @@ import { parseRelatorio } from "./parsers/relatorio";
 import type { Respostas } from "@/types/anamnese";
 import type { RelatorioIA } from "@/types/relatorio";
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-haiku-4-5-20251001";
 
 export interface ResultadoRelatorio {
   relatorio: RelatorioIA;
@@ -24,7 +24,7 @@ async function gerarUmaTentativa(respostas: Respostas): Promise<ResultadoRelator
   // to avoid request timeouts, and we collect the final message at the end.
   const stream = client.messages.stream({
     model: MODEL,
-    max_tokens: 8000,
+    max_tokens: 6000,
     system: SYSTEM_PROMPT,
     messages: [{ role: "user", content: montarPromptUsuario(respostas) }],
   });
