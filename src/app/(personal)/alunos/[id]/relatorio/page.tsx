@@ -237,9 +237,10 @@ export default async function RelatorioPage({ params }: { params: { id: string }
             </SecaoRelatorio>
           )}
 
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
+            <Target className="h-3 w-3" />
             {r.tokens_ia_usados ? `${r.tokens_ia_usados} tokens · ` : ""}
-            Gerado por claude-sonnet-4-6 (Target icon: <Target className="inline h-3 w-3" />)
+            Gerado por IA · {r.gerado_em ? new Date(r.gerado_em).toLocaleDateString("pt-BR") : ""}
           </p>
         </div>
       )}

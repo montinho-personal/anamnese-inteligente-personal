@@ -6,9 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CopyLink } from "@/components/dashboard/copy-link";
 import { StatusSelector } from "@/components/dashboard/status-selector";
+import { ObservacoesSection } from "@/components/dashboard/observacoes-section";
 import { iniciais, formatarData } from "@/lib/utils";
 import { ArrowLeft, FileText, Activity, History, Link2 } from "lucide-react";
-import type { Aluno, Anamnese, Relatorio } from "@/types/database";
+import type { Aluno, Anamnese, Relatorio, Observacao } from "@/types/database";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,13 @@ export default async function AlunoPage({ params }: { params: { id: string } }) 
     .limit(1)
     .single();
   const relatorio = relData as Pick<Relatorio, "id" | "status" | "gerado_em"> | null;
+
+  const { data: obsData } = await supabase
+    .from("observacoes")
+    .select("*")
+    .eq("aluno_id", aluno.id)
+    .order("created_at", { ascending: false });
+  const observacoes = (obsData as Observacao[]) ?? [];
 
   const linkAnamnese = `${APP_URL}/anamnese/${aluno.token_anamnese}`;
   const linkCheckin = `${APP_URL}/anamnese/${aluno.token_anamnese}/checkin`;
@@ -147,6 +155,7 @@ export default async function AlunoPage({ params }: { params: { id: string } }) 
           </CardContent>
         </Card>
       </div>
+      <ObservacoesSection alunoId={aluno.id} observacoesIniciais={observacoes} />
     </div>
   );
 }

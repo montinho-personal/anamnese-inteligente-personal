@@ -18,11 +18,15 @@ const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/alunos", label: "Alunos", icon: Users },
   { href: "/insights", label: "Insights", icon: Lightbulb },
-  { href: "/alertas", label: "Alertas", icon: Bell },
+  { href: "/alertas", label: "Alertas", icon: Bell, badgeKey: "alertas" },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
-export function Sidebar() {
+interface Props {
+  alertasPendentes?: number;
+}
+
+export function Sidebar({ alertasPendentes = 0 }: Props) {
   const pathname = usePathname();
 
   return (
@@ -39,6 +43,7 @@ export function Sidebar() {
           const active =
             pathname === link.href || pathname.startsWith(link.href + "/");
           const Icon = link.icon;
+          const showBadge = link.badgeKey === "alertas" && alertasPendentes > 0;
           return (
             <Link
               key={link.href}
@@ -51,7 +56,12 @@ export function Sidebar() {
               )}
             >
               <Icon className="h-4 w-4" />
-              {link.label}
+              <span className="flex-1">{link.label}</span>
+              {showBadge && (
+                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[11px] font-semibold text-destructive-foreground">
+                  {alertasPendentes > 99 ? "99+" : alertasPendentes}
+                </span>
+              )}
             </Link>
           );
         })}
