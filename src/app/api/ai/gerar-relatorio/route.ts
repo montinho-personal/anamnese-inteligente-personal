@@ -5,7 +5,7 @@ import { gerarRelatorio } from "@/lib/ai/engine";
 import type { Respostas } from "@/types/anamnese";
 import type { Anamnese } from "@/types/database";
 
-export const maxDuration = 60;
+export const maxDuration = 60; // Pro plan allows up to 60s
 
 const schema = z.object({ relatorio_id: z.string().uuid() });
 
