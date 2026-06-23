@@ -26,7 +26,7 @@ async function gerarUmaTentativa(
 
   const stream = client.messages.stream({
     model: MODEL,
-    max_tokens: 16000,
+    max_tokens: 8000,
     system: SYSTEM_PROMPT,
     messages: [{ role: "user", content: montarPromptUsuario(respostas, historico) }],
   });

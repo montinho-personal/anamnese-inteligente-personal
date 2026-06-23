@@ -52,7 +52,7 @@ export default async function RelatorioPage({ params }: { params: { id: string }
         </div>
         <div className="flex gap-2 print:hidden">
           {r && r.status === "concluido" && <BaixarPdfButton nomeAluno={aluno.nome} />}
-          {r && <RegerarButton relatorioId={r.id} />}
+          {r && <RegerarButton relatorioId={r.id} initiallyGenerating={r.status === "gerando"} />}
         </div>
       </div>
 
