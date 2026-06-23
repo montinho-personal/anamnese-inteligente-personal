@@ -423,7 +423,7 @@ export const PERGUNTAS: Pergunta[] = [
 
   // HISTÓRICO
   {
-    id: "tempo_treino", secao: "historico", titulo: "Há quanto tempo você treina?", tipo: "escolha_unica", obrigatoria: true,
+    id: "tempo_treino", secao: "historico", titulo: "Há quanto tempo você treina musculação?", tipo: "escolha_unica", obrigatoria: true,
     opcoes: [
       { valor: "nunca", label: "Nunca treinei" },
       { valor: "menos_6m", label: "Menos de 6 meses" },
