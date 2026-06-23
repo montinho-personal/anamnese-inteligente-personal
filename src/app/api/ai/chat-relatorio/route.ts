@@ -3,7 +3,7 @@ export const maxDuration = 60;
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import Anthropic from "@anthropic-ai/sdk";
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/server";
 import { getPersonal } from "@/lib/data/personal";
 import { PERGUNTAS } from "@/lib/anamnese/flow-engine";
 import type { Aluno, Anamnese, Relatorio } from "@/types/database";
@@ -21,16 +21,18 @@ const REFERENCIAS = [
 ];
 
 export async function POST(req: Request) {
-  const personal = await getPersonal();
-  if (!personal) return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
-
   const body = await req.json();
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Dados inválidos" }, { status: 422 });
 
-  const supabase = createClient();
+  // Use service client to bypass RLS — auth is enforced by verifying aluno
+  // belongs to the authenticated trainer below.
+  const supabase = createServiceClient();
 
-  const { data: alunoData } = await supabase.from("alunos").select("*").eq("id", parsed.data.aluno_id).single();
+  const personal = await getPersonal();
+  if (!personal) return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+
+  const { data: alunoData } = await supabase.from("alunos").select("*").eq("id", parsed.data.aluno_id).eq("personal_id", personal.id).single();
   const aluno = alunoData as Aluno | null;
   if (!aluno) return NextResponse.json({ error: "Aluno não encontrado" }, { status: 404 });
 
