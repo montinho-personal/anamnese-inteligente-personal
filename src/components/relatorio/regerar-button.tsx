@@ -51,24 +51,44 @@ export function RegerarButton({ relatorioId, initiallyGenerating = false }: Prop
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ relatorio_id: relatorioId }),
       });
-      // If we got a response, we're done
-      stopPolling();
-      if (res.ok) {
-        router.refresh();
-      } else {
-        const json = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(json.error ?? "Erro ao gerar relatório");
+
+      if (!res.ok || !res.body) {
+        const text = await res.text();
+        let msg = "Erro ao gerar relatório";
+        try { msg = (JSON.parse(text) as { error?: string }).error ?? msg; } catch { /* ignore */ }
+        throw new Error(msg);
       }
+
+      // Read stream — server sends keep-alive spaces + real chunks, ends with __DONE__ or __ERROR__
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value, { stream: true });
+        if (accumulated.includes("__DONE__") || accumulated.includes("__ERROR__")) break;
+      }
+
+      if (accumulated.includes("__ERROR__")) {
+        const idx = accumulated.lastIndexOf("__ERROR__");
+        throw new Error(accumulated.slice(idx + 9).trim() || "Erro ao gerar relatório");
+      }
+
+      // Success — status __DONE__ received
+      setGerando(false);
+      router.refresh();
     } catch (e) {
-      // Network dropped (mobile sleep, etc.) — server may still be running
-      // Fall back to polling to detect when it finishes
-      if ((e as Error).message === "Failed to fetch" || (e as Error).name === "TypeError") {
+      const msg = e instanceof Error ? e.message : "Erro desconhecido";
+      // Any network/fetch error: fall back to polling (server may still be running)
+      if (msg === "Failed to fetch" || msg.toLowerCase().includes("network") || e instanceof TypeError) {
         startPolling();
-        return; // keep gerando=true, polling will clear it
+        // Keep gerando=true; polling will clear it when done
+      } else {
+        setErro(msg);
+        setGerando(false);
       }
-      setErro(e instanceof Error ? e.message : "Erro desconhecido");
-    } finally {
-      if (!pollRef.current) setGerando(false);
     }
   }
 
