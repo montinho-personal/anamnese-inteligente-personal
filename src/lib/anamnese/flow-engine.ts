@@ -152,6 +152,7 @@ const DESVIOS_POSTURAIS: { valor: string; label: string; descricao?: string }[] 
   { valor: "antev_pelv", label: "Anteversão pélvica", descricao: "A bacia inclina para frente, empinando o bumbum e arqueando bastante a lombar. Muito ligado à hiperlordose." },
   { valor: "retrov_pelv", label: "Retroversão pélvica", descricao: "A bacia inclina para trás, 'engolindo' o bumbum e deixando as costas com pouca ou nenhuma curva lombar." },
   { valor: "outro", label: "Outro" },
+  { valor: "nenhum", label: "Nenhum dos anteriores" },
   { valor: "incerto", label: "Não tenho certeza" },
 ];
 
@@ -161,8 +162,7 @@ function desviosSelecionados(respostas: Respostas): string[] {
 }
 
 function perguntasDesvio(desvio: { valor: string; label: string }): Pergunta[] {
-  const cond = (r: Respostas) =>
-    r["postural_tem_desvio"] === "sim" && desviosSelecionados(r).includes(desvio.valor);
+  const cond = (r: Respostas) => desviosSelecionados(r).includes(desvio.valor);
 
   const labelMin = desvio.valor === "outro" ? "esse desvio" : desvio.label.toLowerCase();
 
@@ -624,15 +624,15 @@ export const PERGUNTAS: Pergunta[] = [
   {
     id: "postural_desvios", secao: "postural",
     titulo: "Quais desvios posturais você possui ou suspeita possuir?",
-    descricao: "Pode escolher mais de uma opção",
+    descricao: "Selecione todos que se aplicam. Se não tiver nenhum, selecione 'Nenhum dos anteriores'.",
     tipo: "escolha_multipla",
+    obrigatoria: true,
     opcoes: DESVIOS_POSTURAIS,
-    condicao: (r) => r["postural_tem_desvio"] === "sim",
   },
 
   // — Aprofundamento por desvio
   ...DESVIOS_POSTURAIS
-    .filter((d) => d.valor !== "incerto")
+    .filter((d) => d.valor !== "incerto" && d.valor !== "nenhum")
     .flatMap(perguntasDesvio),
 
   // — Ramo NÃO SEI: autoavaliação
