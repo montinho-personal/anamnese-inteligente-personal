@@ -68,14 +68,7 @@ export default async function AlunoPage({ params }: { params: { id: string } }) 
             {aluno.sexo ?? ""} · cadastrado em {formatarData(aluno.created_at)}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/alunos/${aluno.id}/editar`}>
-              <Pencil className="h-4 w-4" /> Editar
-            </Link>
-          </Button>
-          <StatusSelector alunoId={aluno.id} status={aluno.status} />
-        </div>
+        <StatusSelector alunoId={aluno.id} status={aluno.status} />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
@@ -98,8 +91,13 @@ export default async function AlunoPage({ params }: { params: { id: string } }) 
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-base">Dados</CardTitle>
+            <Button asChild variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground">
+              <Link href={`/alunos/${aluno.id}/editar`}>
+                <Pencil className="h-3.5 w-3.5 mr-1" /> Editar
+              </Link>
+            </Button>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
             <Linha label="E-mail" valor={aluno.email} />
