@@ -200,7 +200,7 @@ export default async function RelatorioPage({ params }: { params: { id: string }
             <SecaoRelatorio titulo="Divisões de treino sugeridas" icon={LayoutGrid}>
               <div className="space-y-3">
                 {r.divisoes_treino.map((d, i) => (
-                  <DivisaoExpandida key={i} divisao={d} />
+                  <DivisaoExpandida key={i} divisao={d} divisaoIndex={i} relatorioId={r.id} />
                 ))}
               </div>
             </SecaoRelatorio>

@@ -3,13 +3,48 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { ListaItens } from "./secao";
 import type { DivisaoTreino } from "@/types/relatorio";
 
-export function DivisaoExpandida({ divisao }: { divisao: DivisaoTreino }) {
+interface Props {
+  divisao: DivisaoTreino;
+  divisaoIndex: number;
+  relatorioId: string;
+}
+
+export function DivisaoExpandida({ divisao: divisaoInicial, divisaoIndex, relatorioId }: Props) {
   const [expandida, setExpandida] = useState(false);
-  const temEstrategia = !!divisao.explicacao_escolha;  return (
+  const [carregando, setCarregando] = useState(false);
+  const [divisao, setDivisao] = useState<DivisaoTreino>(divisaoInicial);
+  const [erro, setErro] = useState<string | null>(null);
+
+  async function expandir() {
+    if (expandida) { setExpandida(false); return; }
+    setExpandida(true);
+
+    // Already has strategy data — no need to fetch
+    if (divisao.explicacao_escolha) return;
+
+    setCarregando(true);
+    setErro(null);
+    try {
+      const res = await fetch("/api/ai/estrategia-divisao", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ relatorio_id: relatorioId, divisao_index: divisaoIndex }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Erro ao gerar estratégia");
+      setDivisao((prev) => ({ ...prev, ...json.estrategia }));
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Erro desconhecido");
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  return (
     <div className="rounded-lg border border-border p-4 space-y-3">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
@@ -20,11 +55,17 @@ export function DivisaoExpandida({ divisao }: { divisao: DivisaoTreino }) {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setExpandida(!expandida)}
+          onClick={expandir}
+          disabled={carregando}
           className="shrink-0 gap-1 text-xs h-8"
         >
-          Ver Estratégia Completa
-          {expandida ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+          {carregando ? (
+            <><Loader2 className="h-3 w-3 animate-spin" /> Gerando...</>
+          ) : expandida ? (
+            <><ChevronUp className="h-3 w-3" /> Recolher</>
+          ) : (
+            <><ChevronDown className="h-3 w-3" /> Ver Estratégia Completa</>
+          )}
         </Button>
       </div>
 
@@ -34,15 +75,24 @@ export function DivisaoExpandida({ divisao }: { divisao: DivisaoTreino }) {
         <ListaItens titulo="Contras" itens={divisao.contras} />
       </div>
 
-      {/* Expanded strategy panel */}
-      {expandida && !temEstrategia && (
-        <div className="border-t border-border pt-3">
-          <p className="text-xs text-muted-foreground text-center py-2">
-            Este relatório foi gerado antes da atualização de estratégia. Clique em <span className="font-medium text-foreground">Regerar Relatório</span> para ver a estratégia completa.
-          </p>
+      {/* Error state */}
+      {expandida && erro && (
+        <p className="text-xs text-destructive border border-destructive/30 rounded-lg px-3 py-2">
+          {erro}
+        </p>
+      )}
+
+      {/* Loading skeleton */}
+      {expandida && carregando && (
+        <div className="border-t border-border pt-3 space-y-2 animate-pulse">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-4 rounded bg-muted" style={{ width: `${70 + i * 8}%` }} />
+          ))}
         </div>
       )}
-      {expandida && temEstrategia && (
+
+      {/* Expanded strategy panel */}
+      {expandida && !carregando && !erro && divisao.explicacao_escolha && (
         <div className="border-t border-border pt-4 space-y-5">
 
           {/* WHY THIS DIVISION */}
@@ -178,9 +228,7 @@ export function DivisaoExpandida({ divisao }: { divisao: DivisaoTreino }) {
                   <div key={i} className="rounded border border-border/60 p-2.5 text-xs space-y-0.5">
                     <Badge variant="secondary" className="text-[10px] mb-1">{p.tipo}</Badge>
                     <p className="text-muted-foreground">{p.descricao}</p>
-                    {p.criterio && (
-                      <p className="text-muted-foreground/70 italic">Critério: {p.criterio}</p>
-                    )}
+                    {p.criterio && <p className="text-muted-foreground/70 italic">Critério: {p.criterio}</p>}
                   </div>
                 ))}
               </div>

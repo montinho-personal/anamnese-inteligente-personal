@@ -45,49 +45,7 @@ O JSON DEVE seguir EXATAMENTE este schema:
   "protocolo_alongamento": [ { "alvo": "string", "exercicio": "string", "motivo": "string" } ],
   "aquecimento": { "descricao": "string", "passos": ["string"] },
   "divisoes_treino": [
-    {
-      "nome": "string",
-      "estrutura": "string — ex: Upper/Lower, PPL, ABC, Full Body",
-      "pros": ["string"],
-      "contras": ["string"],
-      "explicacao_escolha": "string — por que essa divisão foi escolhida para este aluno específico",
-      "encaixe_rotina": "string — como a divisão se encaixa na disponibilidade de dias/tempo do aluno",
-      "encaixe_objetivos": "string — como a divisão se alinha aos objetivos declarados",
-      "encaixe_limitacoes": "string — como a divisão respeita as limitações físicas, ortopédicas e posturais",
-      "encaixe_recuperacao": "string — como a divisão respeita a capacidade de recuperação do aluno",
-      "exercicios_por_grupo": [
-        {
-          "grupo_muscular": "string",
-          "ordem": 1,
-          "principais": ["string — exercícios compostos prioritários"],
-          "secundarios": ["string — exercícios de assistência"],
-          "acessorios": ["string — isoladores e finalizadores"],
-          "justificativa": "string — por que essa seleção e ordem"
-        }
-      ],
-      "faixas_repeticoes": [
-        { "categoria": "Compostos", "faixa": "string — ex: 4x6-8", "justificativa": "string" },
-        { "categoria": "Isoladores", "faixa": "string — ex: 3x12-15", "justificativa": "string" },
-        { "categoria": "Músculos prioritários", "faixa": "string", "justificativa": "string" },
-        { "categoria": "Músculos secundários", "faixa": "string", "justificativa": "string" }
-      ],
-      "volume_detalhado": [
-        { "grupo_muscular": "string", "series_min": 0, "series_max": 0, "justificativa": "string" }
-      ],
-      "intensidade": {
-        "rir": "string — ex: RIR 2-3",
-        "rpe": "string — ex: RPE 7-8",
-        "proximidade_falha": "string — ex: Parar 2-3 reps antes da falha",
-        "justificativa": "string — baseado na experiência, objetivo e recuperação do aluno"
-      },
-      "tecnicas_avancadas": [
-        { "tecnica": "string — ex: Drop set, Rest-pause, Myo reps", "quando_usar": "string", "justificativa": "string" }
-      ],
-      "progressao": [
-        { "tipo": "carga|repeticoes|volume", "descricao": "string", "criterio": "string — quando progredir" }
-      ],
-      "resumo_executivo_divisao": "string — por que essa divisão é a mais indicada para esse aluno neste momento"
-    }
+    { "nome": "string", "estrutura": "string", "pros": ["string"], "contras": ["string"] }
   ],
   "volume_semanal": [ { "grupo_muscular": "string", "series_semanais": "string" } ],
   "periodizacao": [ { "duracao": "4 semanas|8 semanas|12 semanas", "estrategia": "string", "racional": "string" } ],
