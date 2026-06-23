@@ -1,3 +1,4 @@
+import type { ComponentType } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +11,7 @@ import type { Aluno, Anamnese, Checkin } from "@/types/database";
 import type { ScoresIA, ProtocoloIA, RiscosIA } from "@/types/relatorio";
 import type { InsightCategoria, InsightUrgencia, Insight } from "@/lib/insights/engine";
 
-const CATEGORIA_CONFIG: Record<InsightCategoria, { label: string; icon: React.ComponentType<{ className?: string }> }> = {
+const CATEGORIA_CONFIG: Record<InsightCategoria, { label: string; icon: ComponentType<{ className?: string }> }> = {
   temporal: { label: "Temporal", icon: Clock },
   dor: { label: "Dor / Lesão", icon: Heart },
   mobilidade: { label: "Mobilidade", icon: Activity },
