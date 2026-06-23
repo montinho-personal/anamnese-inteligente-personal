@@ -50,7 +50,11 @@ export async function POST(req: Request) {
     respostas: h.respostas as Respostas,
   }));
 
-  await supabase.from("relatorios").update({ status: "gerando" }).eq("id", rel.id);
+  const { error: setGerandoError } = await supabase
+    .from("relatorios").update({ status: "gerando" }).eq("id", rel.id);
+  if (setGerandoError) {
+    return new Response(JSON.stringify({ error: `DB error: ${setGerandoError.message}` }), { status: 500 });
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return new Response(JSON.stringify({ error: "ANTHROPIC_API_KEY não configurada" }), { status: 500 });
@@ -59,16 +63,15 @@ export async function POST(req: Request) {
 
   const stream = new ReadableStream({
     async start(controller) {
-      // Send a keep-alive byte every 3s so the connection stays open
+      // Keep-alive bytes so the connection stays open while the AI runs (~10-30s)
       const keepAlive = setInterval(() => {
         try { controller.enqueue(encoder.encode(" ")); } catch { /* stream may be closed */ }
       }, 3_000);
 
       try {
         const client = new Anthropic({ apiKey, timeout: 60_000 });
-        let accumulatedText = "";
 
-        const anthropicStream = client.messages.stream({
+        const message = await client.messages.create({
           model: "claude-haiku-4-5-20251001",
           max_tokens: 1500,
           system: SYSTEM_PROMPT,
@@ -81,23 +84,14 @@ export async function POST(req: Request) {
           }],
         });
 
-        for await (const event of anthropicStream) {
-          if (
-            event.type === "content_block_delta" &&
-            "delta" in event &&
-            (event.delta as { type: string }).type === "text_delta"
-          ) {
-            const text = (event.delta as { type: string; text: string }).text;
-            accumulatedText += text;
-            // Also send real chunks to keep connection alive
-            controller.enqueue(encoder.encode(text));
-          }
-        }
+        const texto = message.content
+          .filter((b): b is Anthropic.TextBlock => b.type === "text")
+          .map((b) => b.text)
+          .join("");
 
-        const relatorio = parseRelatorio(accumulatedText);
-        const tokensUsados = 0; // approximate — stream consumed, finalMessage not called
+        const relatorio = parseRelatorio(texto);
 
-        await supabase
+        const { error: updateError } = await supabase
           .from("relatorios")
           .update({
             status: "concluido",
@@ -120,10 +114,12 @@ export async function POST(req: Request) {
             performance_esportiva: relatorio.performance_esportiva ?? null,
             analise_postural: relatorio.analise_postural ?? null,
             evolucao_aluno: relatorio.evolucao_aluno ?? null,
-            tokens_ia_usados: tokensUsados,
+            tokens_ia_usados: (message.usage?.input_tokens ?? 0) + (message.usage?.output_tokens ?? 0),
             gerado_em: new Date().toISOString(),
           })
           .eq("id", rel.id);
+
+        if (updateError) throw new Error(`DB update falhou: ${updateError.message}`);
 
         controller.enqueue(encoder.encode("\n\n__DONE__"));
       } catch (e) {
