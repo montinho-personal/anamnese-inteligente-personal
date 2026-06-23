@@ -147,8 +147,11 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
                     sel ? "border-indigo-600 bg-indigo-50 text-indigo-700" : "border-slate-200 hover:border-indigo-300",
                   )}
                 >
-                  <span>{o.label}</span>
-                  {sel && <Check className="h-5 w-5" />}
+                  <span className="flex-1 pr-2">
+                    <span className="block font-medium">{o.label}</span>
+                    {o.descricao && <span className="block text-xs mt-0.5 font-normal opacity-70 leading-snug">{o.descricao}</span>}
+                  </span>
+                  {sel && <Check className="h-5 w-5 shrink-0" />}
                 </button>
               );
             })}

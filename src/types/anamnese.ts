@@ -13,6 +13,7 @@ export type TipoPergunta =
 export interface OpcaoPergunta {
   valor: string;
   label: string;
+  descricao?: string;
 }
 
 export interface Pergunta {

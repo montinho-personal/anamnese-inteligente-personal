@@ -136,21 +136,21 @@ const CARDIO_ITENS: { valor: string; label: string }[] = [
 // ---------------------------------------------------------------------------
 // Postural deviations
 // ---------------------------------------------------------------------------
-const DESVIOS_POSTURAIS: { valor: string; label: string }[] = [
-  { valor: "cabeca_ant", label: "Cabeça anteriorizada" },
-  { valor: "ombros_proj", label: "Ombros projetados para frente" },
-  { valor: "hipercifose", label: "Hipercifose torácica" },
-  { valor: "hiperlordose", label: "Hiperlordose lombar" },
-  { valor: "retif_cerv", label: "Retificação cervical" },
-  { valor: "retif_lombar", label: "Retificação lombar" },
-  { valor: "escoliose", label: "Escoliose" },
-  { valor: "escapulas", label: "Escápulas aladas" },
-  { valor: "joelho_valgo", label: "Joelho valgo (joelhos para dentro)" },
-  { valor: "joelho_varo", label: "Joelho varo (joelhos para fora)" },
-  { valor: "pe_plano", label: "Pé plano (pé chato)" },
-  { valor: "pe_cavo", label: "Pé cavo" },
-  { valor: "antev_pelv", label: "Anteversão pélvica" },
-  { valor: "retrov_pelv", label: "Retroversão pélvica" },
+const DESVIOS_POSTURAIS: { valor: string; label: string; descricao?: string }[] = [
+  { valor: "cabeca_ant", label: "Cabeça anteriorizada", descricao: "A cabeça fica projetada para frente, à frente dos ombros. Comum em quem passa muito tempo no celular ou computador." },
+  { valor: "ombros_proj", label: "Ombros projetados para frente", descricao: "Os ombros ficam arredondados e caídos para frente, como se a postura estivesse 'fechada'. Muito comum em quem fica sentado muito tempo." },
+  { valor: "hipercifose", label: "Hipercifose torácica", descricao: "Curvatura exagerada nas costas superiores, formando uma 'corcunda'. A região entre os ombros fica muito arqueada para fora." },
+  { valor: "hiperlordose", label: "Hiperlordose lombar", descricao: "Curvatura exagerada na lombar (parte baixa das costas), fazendo o bumbum parecer empinado e a barriga projetada para frente." },
+  { valor: "retif_cerv", label: "Retificação cervical", descricao: "O pescoço perde sua curva natural e fica reto. Geralmente causa dor e rigidez no pescoço e ombros." },
+  { valor: "retif_lombar", label: "Retificação lombar", descricao: "A parte baixa das costas perde a curva natural e fica reta, como uma 'costa chata'. Pode causar dor lombar." },
+  { valor: "escoliose", label: "Escoliose", descricao: "A coluna tem um desvio lateral (em 'S' ou 'C' quando vista de trás). Pode fazer um ombro ficar mais alto que o outro ou o tronco inclinar para um lado." },
+  { valor: "escapulas", label: "Escápulas aladas", descricao: "As omoplatas (ossos das costas) ficam salientes, como 'asas'. Fica evidente quando a pessoa empurra algo com os braços estendidos." },
+  { valor: "joelho_valgo", label: "Joelho valgo (joelhos para dentro)", descricao: "Os joelhos se tocam ou se aproximam quando a pessoa está em pé, mesmo com os pés afastados. Popular como 'joelho em X'." },
+  { valor: "joelho_varo", label: "Joelho varo (joelhos para fora)", descricao: "Os joelhos ficam afastados com os pés juntos, formando um espaço entre eles. Popularmente chamado de 'pernas de cavaleiro' ou 'pernas tortas'." },
+  { valor: "pe_plano", label: "Pé plano (pé chato)", descricao: "O arco interno do pé é muito baixo ou inexistente, fazendo a sola quase toda tocar o chão. Pode causar dor nos pés e joelhos." },
+  { valor: "pe_cavo", label: "Pé cavo", descricao: "O arco do pé é muito elevado, fazendo apenas o calcanhar e a parte da frente do pé tocarem o chão. O oposto do pé plano." },
+  { valor: "antev_pelv", label: "Anteversão pélvica", descricao: "A bacia inclina para frente, empinando o bumbum e arqueando bastante a lombar. Muito ligado à hiperlordose." },
+  { valor: "retrov_pelv", label: "Retroversão pélvica", descricao: "A bacia inclina para trás, 'engolindo' o bumbum e deixando as costas com pouca ou nenhuma curva lombar." },
   { valor: "outro", label: "Outro" },
   { valor: "incerto", label: "Não tenho certeza" },
 ];
