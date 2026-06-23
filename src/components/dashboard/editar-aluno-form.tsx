@@ -15,12 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
 import type { Aluno } from "@/types/database";
 
 export function EditarAlunoForm({ aluno }: { aluno: Aluno }) {
   const router = useRouter();
   const [carregando, setCarregando] = useState(false);
+  const [excluindo, setExcluindo] = useState(false);
+  const [confirmarExclusao, setConfirmarExclusao] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [sexo, setSexo] = useState<string>(aluno.sexo ?? "");
 
@@ -124,16 +126,69 @@ export function EditarAlunoForm({ aluno }: { aluno: Aluno }) {
 
             {erro && <p className="text-sm text-destructive">{erro}</p>}
 
-            <div className="flex gap-3">
-              <Button type="submit" disabled={carregando}>
+            <div className="flex flex-wrap gap-3">
+              <Button type="submit" disabled={carregando || excluindo}>
                 {carregando && <Loader2 className="h-4 w-4 animate-spin" />}
                 Salvar alterações
               </Button>
-              <Button type="button" variant="outline" onClick={() => router.back()} disabled={carregando}>
+              <Button type="button" variant="outline" onClick={() => router.back()} disabled={carregando || excluindo}>
                 Cancelar
               </Button>
             </div>
           </form>
+        </CardContent>
+      </Card>
+
+      {/* Danger zone */}
+      <Card className="border-destructive/30">
+        <CardContent className="pt-6">
+          <div className="mt-8 border-t border-destructive/20 pt-6">
+            <p className="text-sm font-medium text-destructive mb-3">Zona de perigo</p>
+            {!confirmarExclusao ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="border-destructive/50 text-destructive hover:bg-destructive/10"
+                onClick={() => setConfirmarExclusao(true)}
+                disabled={excluindo}
+              >
+                <Trash2 className="h-4 w-4" /> Excluir aluno
+              </Button>
+            ) : (
+              <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-4 space-y-3">
+                <p className="text-sm text-destructive font-medium">
+                  Tem certeza? Essa ação é irreversível. Todos os dados do aluno serão apagados.
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={async () => {
+                      setExcluindo(true);
+                      try {
+                        const res = await fetch(`/api/alunos/${aluno.id}`, { method: "DELETE" });
+                        if (!res.ok) throw new Error("Erro ao excluir");
+                        router.push("/alunos");
+                        router.refresh();
+                      } catch {
+                        setErro("Erro ao excluir aluno.");
+                        setExcluindo(false);
+                        setConfirmarExclusao(false);
+                      }
+                    }}
+                    disabled={excluindo}
+                  >
+                    {excluindo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                    Sim, excluir permanentemente
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setConfirmarExclusao(false)} disabled={excluindo}>
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
