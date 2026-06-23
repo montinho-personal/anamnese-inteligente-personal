@@ -6,7 +6,6 @@ export function montarPromptEstrategia(
   divisao: DivisaoTreino,
   respostas: Respostas,
 ): string {
-  // Only include the most relevant fields to keep the prompt short
   const camposRelevantes = [
     "objetivos", "nivel_experiencia", "dias_disponiveis", "tempo_sessao",
     "local_treino", "orto_regioes", "cardio_itens", "peso", "altura",
@@ -19,33 +18,34 @@ export function montarPromptEstrategia(
     const r = respostas[p.id];
     if (r === undefined || r === null || r === "") continue;
     const valor = Array.isArray(r) ? r.join(", ") : String(r);
-    linhas.push(`- ${p.titulo}: ${valor}`);
+    linhas.push(`${p.titulo}: ${valor}`);
   }
 
-  return `Especialista em treino. Aluno: ${linhas.join(" | ")}
+  return `Especialista em treino. SEJA CONCISO — máximo 1 frase por campo de texto.
 
+Aluno: ${linhas.join(" | ")}
 Divisão: ${divisao.nome} (${divisao.estrutura})
 
-Gere JSON compacto e direto, sem texto fora do JSON:
+Responda SOMENTE com JSON válido, sem markdown:
 {
-  "explicacao_escolha": "string curto",
-  "encaixe_rotina": "string curto",
-  "encaixe_objetivos": "string curto",
-  "encaixe_limitacoes": "string curto",
-  "encaixe_recuperacao": "string curto",
+  "explicacao_escolha": "1 frase",
+  "encaixe_rotina": "1 frase",
+  "encaixe_objetivos": "1 frase",
+  "encaixe_limitacoes": "1 frase",
+  "encaixe_recuperacao": "1 frase",
   "exercicios_por_grupo": [
-    { "grupo_muscular": "string", "ordem": 1, "principais": ["string"], "secundarios": ["string"], "acessorios": ["string"], "justificativa": "string" }
+    { "grupo_muscular": "nome", "ordem": 1, "principais": ["ex1", "ex2"], "secundarios": ["ex1"], "acessorios": ["ex1"], "justificativa": "1 frase" }
   ],
   "faixas_repeticoes": [
-    { "categoria": "Compostos", "faixa": "4x5-8", "justificativa": "string" },
-    { "categoria": "Isoladores", "faixa": "3x12-15", "justificativa": "string" }
+    { "categoria": "Compostos", "faixa": "4x5-8", "justificativa": "1 frase" },
+    { "categoria": "Isoladores", "faixa": "3x12-15", "justificativa": "1 frase" }
   ],
   "volume_detalhado": [
-    { "grupo_muscular": "string", "series_min": 0, "series_max": 0, "justificativa": "string" }
+    { "grupo_muscular": "nome", "series_min": 10, "series_max": 16, "justificativa": "1 frase" }
   ],
-  "intensidade": { "rir": "string", "rpe": "string", "proximidade_falha": "string", "justificativa": "string" },
-  "tecnicas_avancadas": [{ "tecnica": "string", "quando_usar": "string", "justificativa": "string" }],
-  "progressao": [{ "tipo": "carga", "descricao": "string", "criterio": "string" }],
-  "resumo_executivo_divisao": "string curto"
+  "intensidade": { "rir": "RIR 2-3", "rpe": "RPE 7-8", "proximidade_falha": "1 frase", "justificativa": "1 frase" },
+  "tecnicas_avancadas": [{ "tecnica": "nome", "quando_usar": "1 frase", "justificativa": "1 frase" }],
+  "progressao": [{ "tipo": "carga", "descricao": "1 frase", "criterio": "1 frase" }],
+  "resumo_executivo_divisao": "2 frases"
 }`;
 }

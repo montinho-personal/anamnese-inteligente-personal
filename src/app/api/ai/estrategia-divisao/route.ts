@@ -67,7 +67,7 @@ export async function POST(req: Request) {
 
         const anthropicStream = await client.messages.stream({
           model: "claude-sonnet-4-6",
-          max_tokens: 2000,
+          max_tokens: 4000,
           messages: [{ role: "user", content: montarPromptEstrategia(divisao, anamnese.respostas as Respostas) }],
         });
 
