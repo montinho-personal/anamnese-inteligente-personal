@@ -9,7 +9,7 @@ import { SolicitarReavaliacaoButton } from "@/components/dashboard/solicitar-rea
 import { StatusSelector } from "@/components/dashboard/status-selector";
 import { ObservacoesSection } from "@/components/dashboard/observacoes-section";
 import { iniciais, formatarData } from "@/lib/utils";
-import { ArrowLeft, FileText, Activity, History, Link2 } from "lucide-react";
+import { ArrowLeft, FileText, Activity, History, Link2, Pencil } from "lucide-react";
 import type { Aluno, Anamnese, Relatorio, Observacao } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -68,7 +68,14 @@ export default async function AlunoPage({ params }: { params: { id: string } }) 
             {aluno.sexo ?? ""} · cadastrado em {formatarData(aluno.created_at)}
           </p>
         </div>
-        <StatusSelector alunoId={aluno.id} status={aluno.status} />
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/alunos/${aluno.id}/editar`}>
+              <Pencil className="h-4 w-4" /> Editar
+            </Link>
+          </Button>
+          <StatusSelector alunoId={aluno.id} status={aluno.status} />
+        </div>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
