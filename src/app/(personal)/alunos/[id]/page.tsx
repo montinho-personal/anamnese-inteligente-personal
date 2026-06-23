@@ -29,7 +29,7 @@ export default async function AlunoPage({ params }: { params: { id: string } }) 
     .eq("aluno_id", aluno.id)
     .order("versao", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
   const anamnese = anamneseData as Anamnese | null;
 
   const { data: relData } = await supabase
@@ -38,7 +38,7 @@ export default async function AlunoPage({ params }: { params: { id: string } }) 
     .eq("aluno_id", aluno.id)
     .order("created_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
   const relatorio = relData as Pick<Relatorio, "id" | "status" | "gerado_em"> | null;
 
   const { data: obsData } = await supabase

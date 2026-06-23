@@ -34,7 +34,7 @@ export default async function RelatorioPage({ params }: { params: { id: string }
     .eq("aluno_id", aluno.id)
     .order("created_at", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
   const r = relData as Relatorio | null;
 
   return (
