@@ -132,7 +132,7 @@ export default async function AlunoPage({ params }: { params: { id: string } }) 
                 </Badge>
               </div>
               <CopyLink url={linkAnamnese} />
-              {anamnese?.status === "concluida" && (
+              {anamnese && (
                 <SolicitarReavaliacaoButton alunoId={aluno.id} />
               )}
             </div>
