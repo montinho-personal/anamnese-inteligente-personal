@@ -29,28 +29,41 @@ export function DivisaoExpandida({ divisao: divisaoInicial, divisaoIndex, relato
     setCarregando(true);
     setErro(null);
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 90_000);
-      let res: Response;
-      try {
-        res = await fetch("/api/ai/estrategia-divisao", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ relatorio_id: relatorioId, divisao_index: divisaoIndex }),
-          signal: controller.signal,
-        });
-      } finally {
-        clearTimeout(timeout);
+      const res = await fetch("/api/ai/estrategia-divisao", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ relatorio_id: relatorioId, divisao_index: divisaoIndex }),
+      });
+
+      if (!res.ok || !res.body) {
+        const text = await res.text();
+        let msg = "Erro ao gerar estratégia";
+        try { msg = JSON.parse(text).error ?? msg; } catch { /* ignore */ }
+        throw new Error(msg);
       }
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Erro ao gerar estratégia");
-      setDivisao((prev) => ({ ...prev, ...json.estrategia }));
-    } catch (e) {
-      if (e instanceof Error && e.name === "AbortError") {
-        setErro("Tempo esgotado. Tente novamente.");
+
+      // Read streaming response — chunks keep connection alive, last line has __RESULT__
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value, { stream: true });
+      }
+
+      const resultMarker = accumulated.lastIndexOf("__RESULT__");
+      const errorMarker = accumulated.lastIndexOf("__ERROR__");
+      if (resultMarker !== -1) {
+        const json = JSON.parse(accumulated.slice(resultMarker + 10));
+        setDivisao((prev) => ({ ...prev, ...json.estrategia }));
+      } else if (errorMarker !== -1) {
+        throw new Error(accumulated.slice(errorMarker + 9));
       } else {
-        setErro(e instanceof Error ? e.message : "Erro desconhecido");
+        throw new Error("Resposta inesperada do servidor");
       }
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Erro desconhecido");
     } finally {
       setCarregando(false);
     }
