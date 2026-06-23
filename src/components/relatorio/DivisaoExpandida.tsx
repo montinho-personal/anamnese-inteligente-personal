@@ -29,16 +29,28 @@ export function DivisaoExpandida({ divisao: divisaoInicial, divisaoIndex, relato
     setCarregando(true);
     setErro(null);
     try {
-      const res = await fetch("/api/ai/estrategia-divisao", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ relatorio_id: relatorioId, divisao_index: divisaoIndex }),
-      });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 90_000);
+      let res: Response;
+      try {
+        res = await fetch("/api/ai/estrategia-divisao", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ relatorio_id: relatorioId, divisao_index: divisaoIndex }),
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timeout);
+      }
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Erro ao gerar estratégia");
       setDivisao((prev) => ({ ...prev, ...json.estrategia }));
     } catch (e) {
-      setErro(e instanceof Error ? e.message : "Erro desconhecido");
+      if (e instanceof Error && e.name === "AbortError") {
+        setErro("Tempo esgotado. Tente novamente.");
+      } else {
+        setErro(e instanceof Error ? e.message : "Erro desconhecido");
+      }
     } finally {
       setCarregando(false);
     }

@@ -59,13 +59,12 @@ export async function POST(req: Request) {
 
   try {
     const client = new Anthropic({ apiKey });
-    const stream = client.messages.stream({
+    const message = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 4000,
+      max_tokens: 2500,
       messages: [{ role: "user", content: montarPromptEstrategia(divisao, anamnese.respostas as Respostas) }],
     });
 
-    const message = await stream.finalMessage();
     const raw = message.content
       .filter((b): b is Anthropic.TextBlock => b.type === "text")
       .map((b) => b.text)
