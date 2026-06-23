@@ -19,6 +19,7 @@ import {
   IlustracaoPosterior,
   IlustracaoToracica,
   IlustracaoOmbro,
+  IlustracaoQuadril,
 } from "./MobilidadeIlustracao";
 import type { Respostas, RespostaValor } from "@/types/anamnese";
 
@@ -162,6 +163,7 @@ export function AnamneseWizard({ token, nomeAluno, respostasIniciais }: Props) {
             {pergunta.id === "mob_posterior" && <IlustracaoPosterior />}
             {pergunta.id === "mob_toracica" && <IlustracaoToracica />}
             {pergunta.id === "mob_ombro" && <IlustracaoOmbro />}
+            {pergunta.id === "mob_quadril" && <IlustracaoQuadril />}
 
             {!pergunta.descricao && !pergunta.id.startsWith("mob_") && <div className="mb-6" />}
             {(pergunta.descricao || pergunta.id.startsWith("mob_")) && <div className="mb-4" />}

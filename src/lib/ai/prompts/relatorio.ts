@@ -48,10 +48,21 @@ O JSON DEVE seguir EXATAMENTE este schema:
   "volume_semanal": [ { "grupo_muscular": "string", "series_semanais": "string" } ],
   "periodizacao": [ { "duracao": "4 semanas|8 semanas|12 semanas", "estrategia": "string", "racional": "string" } ],
   "scores": { "potencial_resultado": 0, "potencial_aderencia": 0, "risco_lesao": 0, "risco_abandono": 0 },
-  "plano_retencao": { "estrategias": ["string"], "tarefas": ["string"] }
+  "plano_retencao": { "estrategias": ["string"], "tarefas": ["string"] },
+  "performance_esportiva": {
+    "esporte": "string — nome do esporte",
+    "demandas_fisicas": ["string — quais capacidades físicas o esporte exige: força, velocidade, resistência, etc."],
+    "riscos_especificos": ["string — lesões e sobrecargas típicas desse esporte"],
+    "capacidades_prioritarias": ["string — o que o treino complementar deve desenvolver primeiro"],
+    "grupos_musculares_chave": ["string — músculos mais exigidos e que precisam ser priorizados"],
+    "limitacoes_identificadas": ["string — limitações do aluno que impactam o desempenho esportivo"],
+    "treino_complementar": ["string — recomendações práticas de treino de força/potência complementar ao esporte"],
+    "mobilidade_especifica": ["string — exercícios de mobilidade prioritários para o esporte"],
+    "preventivo": ["string — exercícios preventivos para as lesões mais comuns do esporte"]
+  }
 }
 
-Os scores são inteiros de 0 a 100. "divisoes_treino" deve conter exatamente 3 opções com prós e contras. "periodizacao" deve conter as fases de 4, 8 e 12 semanas.`;
+Os scores são inteiros de 0 a 100. "divisoes_treino" deve conter exatamente 3 opções com prós e contras. "periodizacao" deve conter as fases de 4, 8 e 12 semanas. O campo "performance_esportiva" só deve ser incluído se o aluno tiver selecionado o objetivo "performance" na anamnese — caso contrário, omita o campo completamente.`;
 
 /** Renders the answers into a labeled, human-readable block for the model. */
 export function montarPromptUsuario(respostas: Respostas): string {

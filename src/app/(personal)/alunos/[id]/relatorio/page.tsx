@@ -11,7 +11,7 @@ import { RelatorioChat } from "@/components/relatorio/RelatorioChat";
 import { BaixarPdfButton } from "@/components/relatorio/BaixarPdfButton";
 import {
   ArrowLeft, FileText, Award, ShieldAlert, TrendingDown, Brain,
-  Map, Dumbbell, Ban, Wind, Flame, LayoutGrid, BarChart3, CalendarRange, Target, HeartHandshake,
+  Map, Dumbbell, Ban, Wind, Flame, LayoutGrid, BarChart3, CalendarRange, Target, HeartHandshake, Trophy,
 } from "lucide-react";
 import type { Aluno, Relatorio } from "@/types/database";
 
@@ -239,6 +239,19 @@ export default async function RelatorioPage({ params }: { params: { id: string }
             <SecaoRelatorio titulo="Plano de retenção" icon={HeartHandshake}>
               <ListaItens titulo="Estratégias" itens={r.plano_retencao.estrategias} />
               <ListaItens titulo="Tarefas" itens={r.plano_retencao.tarefas} />
+            </SecaoRelatorio>
+          )}
+
+          {r.performance_esportiva && (
+            <SecaoRelatorio titulo={`Performance Esportiva — ${r.performance_esportiva.esporte}`} icon={Trophy}>
+              <ListaItens titulo="Demandas físicas do esporte" itens={r.performance_esportiva.demandas_fisicas} />
+              <ListaItens titulo="Riscos específicos" itens={r.performance_esportiva.riscos_especificos} />
+              <ListaItens titulo="Capacidades prioritárias" itens={r.performance_esportiva.capacidades_prioritarias} />
+              <ListaItens titulo="Grupos musculares-chave" itens={r.performance_esportiva.grupos_musculares_chave} />
+              <ListaItens titulo="Limitações identificadas" itens={r.performance_esportiva.limitacoes_identificadas} />
+              <ListaItens titulo="Treino complementar" itens={r.performance_esportiva.treino_complementar} />
+              <ListaItens titulo="Mobilidade específica" itens={r.performance_esportiva.mobilidade_especifica} />
+              <ListaItens titulo="Exercícios preventivos" itens={r.performance_esportiva.preventivo} />
             </SecaoRelatorio>
           )}
 

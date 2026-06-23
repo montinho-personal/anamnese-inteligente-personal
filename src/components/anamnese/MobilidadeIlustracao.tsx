@@ -146,3 +146,28 @@ export function IlustracaoOmbro() {
     </svg>
   );
 }
+
+export function IlustracaoQuadril() {
+  return (
+    <svg className={BASE} viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="200" height="160" rx="16" fill={BG} />
+      {/* floor / mat */}
+      <rect x="30" y="120" width="140" height="8" rx="4" fill={STROKE2} opacity="0.4" />
+      {/* torso lying down */}
+      <line x1="40" y1="112" x2="120" y2="112" stroke={STROKE} strokeWidth={SW} strokeLinecap="round" />
+      {/* head */}
+      <circle cx="130" cy="112" r="10" stroke={STROKE} strokeWidth={SW} />
+      {/* extended leg */}
+      <line x1="40" y1="112" x2="40" y2="120" stroke={STROKE} strokeWidth={SW} strokeLinecap="round" />
+      {/* bent knee – thigh up */}
+      <line x1="80" y1="112" x2="80" y2="72" stroke={STROKE} strokeWidth={SW} strokeLinecap="round" />
+      {/* shin back toward chest */}
+      <line x1="80" y1="72" x2="100" y2="90" stroke={STROKE} strokeWidth={SW} strokeLinecap="round" />
+      {/* hands pulling knee */}
+      <path d="M100 90 C108 82 114 88 108 96" stroke={STROKE} strokeWidth={SW} strokeLinecap="round" fill="none" />
+      {/* angle arc indicator */}
+      <path d="M80 112 A30 30 0 0 1 80 82" stroke="#F59E0B" strokeWidth={2} strokeDasharray="3 2" fill="none" />
+      <text x="100" y="152" textAnchor="middle" fontSize="10" fill={STROKE} fontFamily="sans-serif">Mobilidade do quadril</text>
+    </svg>
+  );
+}

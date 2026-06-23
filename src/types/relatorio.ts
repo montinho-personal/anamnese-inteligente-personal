@@ -100,6 +100,18 @@ export interface PlanoRetencaoIA {
   tarefas: string[];
 }
 
+export interface PerformanceEsportivaIA {
+  esporte: string;
+  demandas_fisicas: string[];
+  riscos_especificos: string[];
+  capacidades_prioritarias: string[];
+  grupos_musculares_chave: string[];
+  limitacoes_identificadas: string[];
+  treino_complementar: string[];
+  mobilidade_especifica: string[];
+  preventivo: string[];
+}
+
 export interface RelatorioIA {
   resumo_executivo: string;
   classificacao: ClassificacaoIA;
@@ -117,6 +129,7 @@ export interface RelatorioIA {
   periodizacao: PeriodizacaoIA;
   scores: ScoresIA;
   plano_retencao: PlanoRetencaoIA;
+  performance_esportiva?: PerformanceEsportivaIA;
 }
 
 import type { Criticidade } from "./database";
