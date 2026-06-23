@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CopyLink } from "@/components/dashboard/copy-link";
+import { SolicitarReavaliacaoButton } from "@/components/dashboard/solicitar-reavaliacao-button";
 import { StatusSelector } from "@/components/dashboard/status-selector";
 import { ObservacoesSection } from "@/components/dashboard/observacoes-section";
 import { iniciais, formatarData } from "@/lib/utils";
@@ -131,6 +132,9 @@ export default async function AlunoPage({ params }: { params: { id: string } }) 
                 </Badge>
               </div>
               <CopyLink url={linkAnamnese} />
+              {anamnese?.status === "concluida" && (
+                <SolicitarReavaliacaoButton alunoId={aluno.id} />
+              )}
             </div>
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">Check-in semanal</p>
