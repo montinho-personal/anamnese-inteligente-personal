@@ -1,91 +1,133 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, History } from "lucide-react";
+import { ArrowLeft, History, FileText, GitCompare } from "lucide-react";
+import { ComparacaoAnamneses } from "@/components/historico/ComparacaoAnamneses";
 import { formatarData } from "@/lib/utils";
 import { PERGUNTAS } from "@/lib/anamnese/flow-engine";
-import type { Aluno, Anamnese, ComunicacaoLog } from "@/types/database";
-import type { Respostas } from "@/types/anamnese";
+import type { Aluno, Anamnese, Relatorio } from "@/types/database";
 
 export const dynamic = "force-dynamic";
 
 export default async function HistoricoPage({ params }: { params: { id: string } }) {
   const supabase = createClient();
-  const { data: alunoData } = await supabase.from("alunos").select("nome,id").eq("id", params.id).single();
-  const aluno = alunoData as Pick<Aluno, "nome" | "id"> | null;
+
+  const { data: alunoData } = await supabase.from("alunos").select("*").eq("id", params.id).single();
+  const aluno = alunoData as Aluno | null;
   if (!aluno) notFound();
 
-  const { data: anamneseData } = await supabase
+  const { data: anamnesesData } = await supabase
     .from("anamneses")
     .select("*")
     .eq("aluno_id", aluno.id)
-    .order("versao", { ascending: false })
-    .limit(1)
-    .single();
-  const anamnese = anamneseData as Anamnese | null;
-  const respostas = (anamnese?.respostas as Respostas) ?? {};
+    .order("versao", { ascending: false });
+  const anamneses = (anamnesesData as Anamnese[]) ?? [];
 
-  const { data: comData } = await supabase
-    .from("comunicacoes_log")
-    .select("*")
+  const { data: relatoriosData } = await supabase
+    .from("relatorios")
+    .select("id, anamnese_id, status, gerado_em, versao")
     .eq("aluno_id", aluno.id)
     .order("created_at", { ascending: false });
-  const comunicacoes = (comData as ComunicacaoLog[]) ?? [];
+  const relatorios = (relatoriosData ?? []) as Pick<Relatorio, "id" | "anamnese_id" | "status" | "gerado_em" | "versao">[];
 
-  const respondidas = PERGUNTAS.filter((p) => respostas[p.id] !== undefined);
+  const relPorAnamnese: Record<string, typeof relatorios[number]> = Object.fromEntries(
+    relatorios.map((r) => [r.anamnese_id, r]),
+  );
 
   return (
     <div className="space-y-6">
       <Link href={`/alunos/${aluno.id}`} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:underline">
         <ArrowLeft className="h-4 w-4" /> Voltar
       </Link>
-      <h1 className="text-2xl font-bold flex items-center gap-2">
-        <History className="h-5 w-5 text-primary" /> Histórico de {aluno.nome}
-      </h1>
 
-      <Card>
-        <CardContent className="p-5 space-y-3">
-          <h2 className="font-semibold">Respostas da anamnese</h2>
-          {respondidas.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Anamnese ainda não respondida.</p>
-          ) : (
-            <div className="space-y-2">
-              {respondidas.map((p) => {
-                const v = respostas[p.id];
-                return (
-                  <div key={p.id} className="border-b border-border/50 py-2 last:border-0">
-                    <p className="text-sm text-muted-foreground">{p.titulo}</p>
-                    <p className="text-sm">{Array.isArray(v) ? v.join(", ") : String(v)}</p>
+      <div>
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <History className="h-5 w-5 text-primary" /> Histórico de Anamneses
+        </h1>
+        <p className="text-muted-foreground text-sm">{aluno.nome} · {anamneses.length} registro(s)</p>
+      </div>
+
+      {anamneses.length === 0 && (
+        <Card>
+          <CardContent className="py-12 text-center text-muted-foreground">
+            Nenhuma anamnese registrada ainda.
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="space-y-3">
+        {anamneses.map((a) => {
+          const rel = relPorAnamnese[a.id];
+          const respostas = a.respostas as Record<string, unknown>;
+          const objetivos = Array.isArray(respostas?.objetivos)
+            ? (respostas.objetivos as string[]).join(", ")
+            : (respostas?.objetivos as string | undefined) ?? "—";
+          const peso = respostas?.peso ? `${respostas.peso} kg` : null;
+          const dias = respostas?.dias_disponiveis ? `${respostas.dias_disponiveis}×/sem` : null;
+          const isAtual = a.versao === anamneses[0]?.versao;
+
+          return (
+            <Card key={a.id}>
+              <CardContent className="pt-4 pb-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-sm">Versão {a.versao}</span>
+                      <Badge variant={
+                        a.status === "concluida" ? "success" :
+                        a.status === "em_progresso" ? "warning" : "muted"
+                      }>{a.status}</Badge>
+                      {isAtual && <Badge variant="default">Atual</Badge>}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {a.concluida_em
+                        ? `Concluída em ${formatarData(a.concluida_em)}`
+                        : `Iniciada em ${formatarData(a.created_at)}`}
+                      {a.progresso_percentual > 0 && ` · ${a.progresso_percentual}% completa`}
+                    </p>
+                    <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                      {objetivos !== "—" && <span>🎯 {objetivos}</span>}
+                      {peso && <span>⚖️ {peso}</span>}
+                      {dias && <span>🗓 {dias}</span>}
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="p-5 space-y-3">
-          <h2 className="font-semibold">Comunicações</h2>
-          {comunicacoes.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma comunicação registrada.</p>
-          ) : (
-            comunicacoes.map((c) => (
-              <div key={c.id} className="flex items-center justify-between border-b border-border/50 py-2 last:border-0 text-sm">
-                <span className="capitalize">{c.tipo.replace("_", " ")} · {c.canal}</span>
-                <div className="flex items-center gap-2">
-                  <Badge variant={c.status === "enviado" ? "success" : c.status === "falhou" ? "destructive" : "muted"}>
-                    {c.status}
-                  </Badge>
-                  <span className="text-muted-foreground">{formatarData(c.created_at)}</span>
+                  {rel?.status === "concluido" && (
+                    <Link
+                      href={`/alunos/${aluno.id}/relatorio`}
+                      className="inline-flex items-center gap-1 text-xs border border-border rounded-lg px-3 py-1.5 hover:bg-muted transition-colors"
+                    >
+                      <FileText className="h-3 w-3" /> Relatório
+                    </Link>
+                  )}
                 </div>
-              </div>
-            ))
-          )}
-        </CardContent>
-      </Card>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {anamneses.length >= 2 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <GitCompare className="h-4 w-4 text-primary" />
+              Comparação de versões
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Versão {anamneses[0].versao} (atual) vs versão {anamneses[1].versao} (anterior)
+            </p>
+          </CardHeader>
+          <CardContent>
+            <ComparacaoAnamneses
+              atual={anamneses[0]}
+              anterior={anamneses[1]}
+              perguntas={PERGUNTAS}
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

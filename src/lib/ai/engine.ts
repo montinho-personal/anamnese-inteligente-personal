@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { SYSTEM_PROMPT, montarPromptUsuario } from "./prompts/relatorio";
+import type { HistoricoAnamnese } from "./prompts/relatorio";
 import { parseRelatorio } from "./parsers/relatorio";
 import type { Respostas } from "@/types/anamnese";
 import type { RelatorioIA } from "@/types/relatorio";
@@ -17,16 +18,17 @@ function getClient(): Anthropic {
   return new Anthropic({ apiKey });
 }
 
-async function gerarUmaTentativa(respostas: Respostas): Promise<ResultadoRelatorio> {
+async function gerarUmaTentativa(
+  respostas: Respostas,
+  historico?: HistoricoAnamnese[],
+): Promise<ResultadoRelatorio> {
   const client = getClient();
 
-  // Stream the response — large structured JSON output benefits from streaming
-  // to avoid request timeouts, and we collect the final message at the end.
   const stream = client.messages.stream({
     model: MODEL,
     max_tokens: 16000,
     system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: montarPromptUsuario(respostas) }],
+    messages: [{ role: "user", content: montarPromptUsuario(respostas, historico) }],
   });
 
   const message = await stream.finalMessage();
@@ -43,19 +45,16 @@ async function gerarUmaTentativa(respostas: Respostas): Promise<ResultadoRelator
   return { relatorio, tokensUsados };
 }
 
-/**
- * Generates the intelligent report from anamnese answers. Retries once on
- * failure (e.g. malformed JSON, transient API error) before giving up.
- */
 export async function gerarRelatorio(
   respostas: Respostas,
+  historico?: HistoricoAnamnese[],
 ): Promise<ResultadoRelatorio> {
   try {
-    return await gerarUmaTentativa(respostas);
+    return await gerarUmaTentativa(respostas, historico);
   } catch (primeiroErro) {
     console.warn("Primeira tentativa de relatório falhou, repetindo...", primeiroErro);
     try {
-      return await gerarUmaTentativa(respostas);
+      return await gerarUmaTentativa(respostas, historico);
     } catch (segundoErro) {
       throw new Error(
         `Geração do relatório falhou após 2 tentativas: ${

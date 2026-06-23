@@ -83,6 +83,7 @@ export interface Relatorio {
   plano_retencao: PlanoRetencaoIA | null;
   performance_esportiva: PerformanceEsportivaIA | null;
   analise_postural: AnalisePosturalIA | null;
+  evolucao_aluno: EvolucaoAlunoIA | null;
   tokens_ia_usados: number | null;
   gerado_em: string | null;
   created_at: string;
@@ -153,4 +154,5 @@ import type {
   PlanoRetencaoIA,
   PerformanceEsportivaIA,
   AnalisePosturalIA,
+  EvolucaoAlunoIA,
 } from "./relatorio";

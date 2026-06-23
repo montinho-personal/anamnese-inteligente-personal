@@ -64,11 +64,69 @@ export interface AquecimentoIA {
   passos: string[];
 }
 
+// ---------------------------------------------------------------------------
+// Expanded DivisaoTreino — all new fields are optional for backward compat
+// ---------------------------------------------------------------------------
+
+export interface ExercicioGrupoDivisao {
+  grupo_muscular: string;
+  ordem: number;
+  principais: string[];
+  secundarios?: string[];
+  acessorios?: string[];
+  justificativa?: string;
+}
+
+export interface IntensidadeDivisao {
+  rir: string;
+  rpe: string;
+  proximidade_falha: string;
+  justificativa?: string;
+}
+
+export interface TecnicaAvancadaDivisao {
+  tecnica: string;
+  quando_usar?: string;
+  justificativa?: string;
+}
+
+export interface ProgressaoDivisao {
+  tipo: string;
+  descricao: string;
+  criterio?: string;
+}
+
+export interface VolumeMuscularDivisao {
+  grupo_muscular: string;
+  series_min: number;
+  series_max: number;
+  justificativa?: string;
+}
+
+export interface FaixaRepeticoesDivisao {
+  categoria: string;
+  faixa: string;
+  justificativa?: string;
+}
+
 export interface DivisaoTreino {
   nome: string;
   estrutura: string;
   pros: string[];
   contras: string[];
+  // Strategy fields:
+  explicacao_escolha?: string;
+  encaixe_rotina?: string;
+  encaixe_objetivos?: string;
+  encaixe_limitacoes?: string;
+  encaixe_recuperacao?: string;
+  exercicios_por_grupo?: ExercicioGrupoDivisao[];
+  faixas_repeticoes?: FaixaRepeticoesDivisao[];
+  volume_detalhado?: VolumeMuscularDivisao[];
+  intensidade?: IntensidadeDivisao;
+  tecnicas_avancadas?: TecnicaAvancadaDivisao[];
+  progressao?: ProgressaoDivisao[];
+  resumo_executivo_divisao?: string;
 }
 
 export type DivisoesTreinoIA = DivisaoTreino[];
@@ -123,6 +181,14 @@ export interface PerformanceEsportivaIA {
   preventivo: string[];
 }
 
+export interface EvolucaoAlunoIA {
+  melhorou: string[];
+  piorou: string[];
+  permaneceu: string[];
+  novos_riscos: string[];
+  novas_oportunidades: string[];
+}
+
 export interface RelatorioIA {
   resumo_executivo: string;
   classificacao: ClassificacaoIA;
@@ -142,6 +208,7 @@ export interface RelatorioIA {
   plano_retencao: PlanoRetencaoIA;
   performance_esportiva?: PerformanceEsportivaIA;
   analise_postural?: AnalisePosturalIA;
+  evolucao_aluno?: EvolucaoAlunoIA;
 }
 
 import type { Criticidade } from "./database";

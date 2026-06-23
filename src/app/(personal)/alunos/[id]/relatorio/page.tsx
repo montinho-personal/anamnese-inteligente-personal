@@ -9,9 +9,10 @@ import { ScoreGauge } from "@/components/relatorio/score-gauge";
 import { RegerarButton } from "@/components/relatorio/regerar-button";
 import { RelatorioChat } from "@/components/relatorio/RelatorioChat";
 import { BaixarPdfButton } from "@/components/relatorio/BaixarPdfButton";
+import { DivisaoExpandida } from "@/components/relatorio/DivisaoExpandida";
 import {
   ArrowLeft, FileText, Award, ShieldAlert, TrendingDown, Brain,
-  Map, Dumbbell, Ban, Wind, Flame, LayoutGrid, BarChart3, CalendarRange, Target, HeartHandshake, Trophy, PersonStanding,
+  Map, Dumbbell, Ban, Wind, Flame, LayoutGrid, BarChart3, CalendarRange, Target, HeartHandshake, Trophy, PersonStanding, TrendingUp,
 } from "lucide-react";
 import type { Aluno, Relatorio } from "@/types/database";
 
@@ -197,14 +198,9 @@ export default async function RelatorioPage({ params }: { params: { id: string }
 
           {r.divisoes_treino && (
             <SecaoRelatorio titulo="Divisões de treino sugeridas" icon={LayoutGrid}>
-              <div className="grid gap-3 md:grid-cols-3">
+              <div className="space-y-3">
                 {r.divisoes_treino.map((d, i) => (
-                  <div key={i} className="rounded-lg border border-border p-3 space-y-2">
-                    <p className="font-medium">{d.nome}</p>
-                    <p className="text-xs text-muted-foreground">{d.estrutura}</p>
-                    <ListaItens titulo="Prós" itens={d.pros} />
-                    <ListaItens titulo="Contras" itens={d.contras} />
-                  </div>
+                  <DivisaoExpandida key={i} divisao={d} />
                 ))}
               </div>
             </SecaoRelatorio>
@@ -239,6 +235,19 @@ export default async function RelatorioPage({ params }: { params: { id: string }
             <SecaoRelatorio titulo="Plano de retenção" icon={HeartHandshake}>
               <ListaItens titulo="Estratégias" itens={r.plano_retencao.estrategias} />
               <ListaItens titulo="Tarefas" itens={r.plano_retencao.tarefas} />
+            </SecaoRelatorio>
+          )}
+
+          {r.evolucao_aluno && (
+            <SecaoRelatorio titulo="Evolução do Aluno" icon={TrendingUp}>
+              <p className="text-xs text-muted-foreground">Comparação com a anamnese anterior, gerada automaticamente pela IA.</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <ListaItens titulo="Melhorou" itens={r.evolucao_aluno.melhorou} />
+                <ListaItens titulo="Piorou" itens={r.evolucao_aluno.piorou} />
+                <ListaItens titulo="Permaneceu igual" itens={r.evolucao_aluno.permaneceu} />
+                <ListaItens titulo="Novos riscos identificados" itens={r.evolucao_aluno.novos_riscos} />
+              </div>
+              <ListaItens titulo="Novas oportunidades" itens={r.evolucao_aluno.novas_oportunidades} />
             </SecaoRelatorio>
           )}
 

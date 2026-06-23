@@ -4,8 +4,9 @@ import { createServiceClient } from "@/lib/supabase/server";
 import { gerarRelatorio } from "@/lib/ai/engine";
 import type { Respostas } from "@/types/anamnese";
 import type { Anamnese } from "@/types/database";
+import type { HistoricoAnamnese } from "@/lib/ai/prompts/relatorio";
 
-export const maxDuration = 60; // Pro plan allows up to 60s
+export const maxDuration = 60;
 
 const schema = z.object({ relatorio_id: z.string().uuid() });
 
@@ -33,11 +34,28 @@ export async function POST(req: Request) {
   const anamnese = anamneseData as Anamnese | null;
   if (!anamnese) return NextResponse.json({ error: "Anamnese não encontrada" }, { status: 404 });
 
+  // Fetch all previous completed anamneses for this aluno (older versions)
+  const { data: historicoData } = await supabase
+    .from("anamneses")
+    .select("versao, concluida_em, respostas")
+    .eq("aluno_id", rel.aluno_id)
+    .eq("status", "concluida")
+    .lt("versao", anamnese.versao)
+    .order("versao", { ascending: false })
+    .limit(3);
+
+  const historico: HistoricoAnamnese[] = (historicoData ?? []).map((h) => ({
+    versao: h.versao as number,
+    concluida_em: h.concluida_em as string | null,
+    respostas: h.respostas as Respostas,
+  }));
+
   await supabase.from("relatorios").update({ status: "gerando" }).eq("id", rel.id);
 
   try {
     const { relatorio, tokensUsados } = await gerarRelatorio(
       anamnese.respostas as Respostas,
+      historico.length > 0 ? historico : undefined,
     );
 
     await supabase
@@ -62,6 +80,7 @@ export async function POST(req: Request) {
         plano_retencao: relatorio.plano_retencao,
         performance_esportiva: relatorio.performance_esportiva ?? null,
         analise_postural: relatorio.analise_postural ?? null,
+        evolucao_aluno: relatorio.evolucao_aluno ?? null,
         tokens_ia_usados: tokensUsados,
         gerado_em: new Date().toISOString(),
       })
@@ -71,7 +90,6 @@ export async function POST(req: Request) {
   } catch (e) {
     console.error("Geração de relatório falhou:", e);
     await supabase.from("relatorios").update({ status: "falhou" }).eq("id", rel.id);
-    // Notify the trainer via an alert.
     const { data: aluno } = await supabase
       .from("alunos")
       .select("personal_id, nome")
