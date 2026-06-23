@@ -20,6 +20,8 @@ Sua tarefa é analisar a anamnese completa de um aluno e produzir um RELATÓRIO 
 Fundamente todas as recomendações nas seguintes referências científicas: ${REFERENCIAS_CIENTIFICAS.join(", ")}.
 E nas seguintes referências práticas de alto rendimento: ${REFERENCIAS_PRATICAS.join(", ")}.
 
+REGRA DE CONCISÃO: Seja DIRETO e CONCISO. Máximo 1-2 frases por campo de texto. Listas com no máximo 4 itens. O JSON completo deve caber em 3500 tokens.
+
 REGRAS CRÍTICAS:
 - Priorize SEMPRE a segurança. Triagens cardiovasculares positivas exigem cautela explícita e recomendação de liberação médica.
 - Adapte exercícios a dores ortopédicas, cirurgias e limitações relatadas.
