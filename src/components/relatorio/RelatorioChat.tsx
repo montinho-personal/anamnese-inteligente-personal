@@ -52,6 +52,8 @@ export function RelatorioChat({ alunoId, nomeAluno }: Props) {
       const json = await res.json();
       if (json.resposta) {
         setMensagens([...novas, { role: "assistant", content: json.resposta }]);
+      } else {
+        setMensagens([...novas, { role: "assistant", content: json.error ?? "Erro ao obter resposta. Tente novamente." }]);
       }
     } catch {
       setMensagens([...novas, { role: "assistant", content: "Erro ao obter resposta. Tente novamente." }]);

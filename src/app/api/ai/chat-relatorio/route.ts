@@ -69,19 +69,27 @@ ${relatorio?.riscos ? `RISCOS: Cardiovascular ${relatorio.riscos.cardiovascular?
 
 Responda de forma técnica, direta e baseada nos dados acima. Se a pergunta não puder ser respondida com os dados disponíveis, diga o que falta. Responda sempre em português do Brasil.`;
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return NextResponse.json({ error: "ANTHROPIC_API_KEY não configurada" }, { status: 500 });
 
-  const response = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1024,
-    system: systemPrompt,
-    messages: parsed.data.mensagens.map((m) => ({ role: m.role, content: m.content })),
-  });
+  try {
+    const client = new Anthropic({ apiKey });
 
-  const texto = response.content
-    .filter((b): b is Anthropic.TextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("");
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1024,
+      system: systemPrompt,
+      messages: parsed.data.mensagens.map((m) => ({ role: m.role, content: m.content })),
+    });
 
-  return NextResponse.json({ resposta: texto });
+    const texto = response.content
+      .filter((b): b is Anthropic.TextBlock => b.type === "text")
+      .map((b) => b.text)
+      .join("");
+
+    return NextResponse.json({ resposta: texto });
+  } catch (e) {
+    console.error("Chat IA erro:", e);
+    return NextResponse.json({ error: "Falha ao consultar a IA" }, { status: 500 });
+  }
 }
