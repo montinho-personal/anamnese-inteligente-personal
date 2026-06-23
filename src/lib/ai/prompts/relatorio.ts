@@ -31,6 +31,7 @@ O JSON DEVE seguir EXATAMENTE este schema (sem campos extras):
 {
   "resumo_executivo": "string",
   "classificacao": { "nivel": "Iniciante|Intermediário|Avançado", "justificativa": "string" },
+  "scores": { "potencial_resultado": 0, "potencial_aderencia": 0, "risco_lesao": 0, "risco_abandono": 0 },
   "riscos": {
     "cardiovascular": { "nivel": "alta|media|baixa", "descricao": "string", "evitar": ["string","string"], "fazer": ["string","string"] },
     "ortopedico": { "nivel": "alta|media|baixa", "descricao": "string", "evitar": ["string","string"], "fazer": ["string","string"] },
@@ -53,7 +54,6 @@ O JSON DEVE seguir EXATAMENTE este schema (sem campos extras):
     { "duracao": "8 semanas", "estrategia": "string", "racional": "string" },
     { "duracao": "12 semanas", "estrategia": "string", "racional": "string" }
   ],
-  "scores": { "potencial_resultado": 0, "potencial_aderencia": 0, "risco_lesao": 0, "risco_abandono": 0 },
   "plano_retencao": { "estrategias": ["string","string"], "tarefas": ["string","string"] }
 }
 

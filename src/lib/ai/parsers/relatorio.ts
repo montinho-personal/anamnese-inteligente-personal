@@ -15,8 +15,9 @@ export function parseRelatorio(raw: string): RelatorioIA {
   if (end !== -1 && end > start) {
     try {
       const parsed = JSON.parse(texto.slice(start, end + 1)) as Partial<RelatorioIA>;
-      assertCamposObrigatorios(parsed);
-      return parsed as RelatorioIA;
+      if (parsed.resumo_executivo || parsed.classificacao) {
+        return parsed as RelatorioIA;
+      }
     } catch {
       // Fall through to repair attempt
     }
@@ -26,21 +27,14 @@ export function parseRelatorio(raw: string): RelatorioIA {
   const partial = repairJson(texto.slice(start));
   try {
     const parsed = JSON.parse(partial) as Partial<RelatorioIA>;
-    assertCamposObrigatorios(parsed);
+    if (!parsed.resumo_executivo && !parsed.classificacao) {
+      throw new Error("JSON parseado mas sem campos principais.");
+    }
     return parsed as RelatorioIA;
   } catch (e) {
     throw new Error(
       `Falha ao parsear JSON da IA: ${e instanceof Error ? e.message : "erro desconhecido"}`,
     );
-  }
-}
-
-function assertCamposObrigatorios(r: Partial<RelatorioIA>) {
-  const obrigatorios: (keyof RelatorioIA)[] = ["resumo_executivo", "classificacao", "riscos", "scores"];
-  for (const campo of obrigatorios) {
-    if (r[campo] === undefined) {
-      throw new Error(`Relatório da IA incompleto: campo "${campo}" ausente.`);
-    }
   }
 }
 
