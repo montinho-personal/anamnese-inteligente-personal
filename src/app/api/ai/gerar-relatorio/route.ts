@@ -65,7 +65,7 @@ export async function POST(req: Request) {
       }, 3_000);
 
       try {
-        const client = new Anthropic({ apiKey });
+        const client = new Anthropic({ apiKey, timeout: 60_000 });
         let accumulatedText = "";
 
         const anthropicStream = client.messages.stream({
