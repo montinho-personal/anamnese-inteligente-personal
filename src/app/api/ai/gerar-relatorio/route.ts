@@ -59,18 +59,18 @@ export async function POST(req: Request) {
 
   const stream = new ReadableStream({
     async start(controller) {
-      // Send a keep-alive byte every 10s so the connection stays open
+      // Send a keep-alive byte every 3s so the connection stays open
       const keepAlive = setInterval(() => {
         try { controller.enqueue(encoder.encode(" ")); } catch { /* stream may be closed */ }
-      }, 10_000);
+      }, 3_000);
 
       try {
         const client = new Anthropic({ apiKey });
         let accumulatedText = "";
 
         const anthropicStream = client.messages.stream({
-          model: "claude-3-5-haiku-20241022",
-          max_tokens: 4000,
+          model: "claude-3-haiku-20240307",
+          max_tokens: 1500,
           system: SYSTEM_PROMPT,
           messages: [{
             role: "user",
