@@ -177,7 +177,7 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
             {opcoes.map((n) => (
               <button
                 key={n}
-                onClick={() => escolhaUnica(String(n))}
+                onClick={() => onChange(String(n))}
                 className={cn(
                   "flex-1 rounded-xl border-2 py-4 text-lg font-semibold transition-all",
                   selecionado === n ? "border-indigo-600 bg-indigo-50 text-indigo-700" : "border-slate-200 hover:border-indigo-300",
@@ -187,14 +187,16 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
               </button>
             ))}
           </div>
-          {labelSelecionado && (
+          {labelSelecionado ? (
             <p className="rounded-lg bg-indigo-50 border border-indigo-100 px-4 py-3 text-sm text-indigo-800 leading-relaxed">
               {selecionado} — {labelSelecionado}
             </p>
-          )}
-          {!labelSelecionado && pergunta.dica && (
+          ) : pergunta.dica ? (
             <p className="text-sm text-slate-400 leading-relaxed">💡 {pergunta.dica}</p>
-          )}
+          ) : null}
+          <Button onClick={onAvancar} disabled={!valor} className="w-full h-12">
+            Confirmar
+          </Button>
         </div>
       );
     }
