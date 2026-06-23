@@ -27,7 +27,7 @@ export async function POST(_req: Request, { params }: { params: { id: string } }
     .single();
   const ultima = ultimaData as Pick<Anamnese, "versao" | "status"> | null;
 
-  if (ultima?.status === "pendente" || ultima?.status === "em_progresso") {
+  if (ultima?.status === "pendente") {
     return NextResponse.json({ error: "Já existe uma anamnese em aberto para este aluno" }, { status: 409 });
   }
 
