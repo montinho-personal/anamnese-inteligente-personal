@@ -30,7 +30,7 @@ export function RegerarButton({ relatorioId, initiallyGenerating = false }: Prop
         } else if (status === "falhou") {
           stopPolling();
           setGerando(false);
-          setErro("Falha na geração. Tente novamente.");
+          router.refresh();
         }
       } catch { /* keep polling */ }
     }, 5000);

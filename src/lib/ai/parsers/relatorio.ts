@@ -1,46 +1,72 @@
 import type { RelatorioIA } from "@/types/relatorio";
 
-/**
- * Extracts and validates the JSON report from a Claude response. The model is
- * instructed to return bare JSON, but we defensively strip code fences and
- * locate the outermost object in case of stray text.
- */
 export function parseRelatorio(raw: string): RelatorioIA {
   let texto = raw.trim();
 
-  // Strip markdown code fences if present.
+  // Strip markdown code fences if present
   const fence = texto.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (fence) texto = fence[1].trim();
 
-  // Locate the outermost JSON object.
   const start = texto.indexOf("{");
-  const end = texto.lastIndexOf("}");
-  if (start === -1 || end === -1 || end < start) {
-    throw new Error("Resposta da IA não contém JSON válido.");
-  }
-  const json = texto.slice(start, end + 1);
+  if (start === -1) throw new Error("Resposta da IA não contém JSON válido.");
 
-  let parsed: unknown;
+  // Try full JSON first
+  const end = texto.lastIndexOf("}");
+  if (end !== -1 && end > start) {
+    try {
+      const parsed = JSON.parse(texto.slice(start, end + 1)) as Partial<RelatorioIA>;
+      assertCamposObrigatorios(parsed);
+      return parsed as RelatorioIA;
+    } catch {
+      // Fall through to repair attempt
+    }
+  }
+
+  // JSON may be truncated — attempt to repair by closing open structures
+  const partial = repairJson(texto.slice(start));
   try {
-    parsed = JSON.parse(json);
+    const parsed = JSON.parse(partial) as Partial<RelatorioIA>;
+    assertCamposObrigatorios(parsed);
+    return parsed as RelatorioIA;
   } catch (e) {
     throw new Error(
       `Falha ao parsear JSON da IA: ${e instanceof Error ? e.message : "erro desconhecido"}`,
     );
   }
+}
 
-  const r = parsed as Partial<RelatorioIA>;
-  const obrigatorios: (keyof RelatorioIA)[] = [
-    "resumo_executivo",
-    "classificacao",
-    "riscos",
-    "scores",
-  ];
+function assertCamposObrigatorios(r: Partial<RelatorioIA>) {
+  const obrigatorios: (keyof RelatorioIA)[] = ["resumo_executivo", "classificacao", "riscos", "scores"];
   for (const campo of obrigatorios) {
     if (r[campo] === undefined) {
       throw new Error(`Relatório da IA incompleto: campo "${campo}" ausente.`);
     }
   }
+}
 
-  return parsed as RelatorioIA;
+/** Close unclosed JSON brackets/braces/strings to make a truncated JSON parseable. */
+function repairJson(s: string): string {
+  const stack: string[] = [];
+  let inString = false;
+  let escaped = false;
+
+  for (const ch of s) {
+    if (escaped) { escaped = false; continue; }
+    if (ch === "\\") { escaped = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (inString) continue;
+    if (ch === "{") stack.push("}");
+    else if (ch === "[") stack.push("]");
+    else if (ch === "}" || ch === "]") stack.pop();
+  }
+
+  // Close any open string
+  let result = s;
+  if (inString) result += '"';
+
+  // Remove trailing commas before closing
+  result = result.replace(/,\s*$/, "");
+
+  // Close remaining open structures
+  return result + stack.reverse().join("");
 }
