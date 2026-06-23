@@ -9,9 +9,7 @@ import type { DivisaoTreino } from "@/types/relatorio";
 
 export function DivisaoExpandida({ divisao }: { divisao: DivisaoTreino }) {
   const [expandida, setExpandida] = useState(false);
-  const temEstrategia = !!divisao.explicacao_escolha;
-
-  return (
+  const temEstrategia = !!divisao.explicacao_escolha;  return (
     <div className="rounded-lg border border-border p-4 space-y-3">
       {/* Header */}
       <div className="flex items-start justify-between gap-2">
@@ -19,17 +17,15 @@ export function DivisaoExpandida({ divisao }: { divisao: DivisaoTreino }) {
           <p className="font-semibold text-base">{divisao.nome}</p>
           <p className="text-xs text-muted-foreground">{divisao.estrutura}</p>
         </div>
-        {temEstrategia && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setExpandida(!expandida)}
-            className="shrink-0 gap-1 text-xs h-8"
-          >
-            Ver Estratégia Completa
-            {expandida ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-          </Button>
-        )}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setExpandida(!expandida)}
+          className="shrink-0 gap-1 text-xs h-8"
+        >
+          Ver Estratégia Completa
+          {expandida ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        </Button>
       </div>
 
       {/* Pros / Contras always visible */}
@@ -39,6 +35,13 @@ export function DivisaoExpandida({ divisao }: { divisao: DivisaoTreino }) {
       </div>
 
       {/* Expanded strategy panel */}
+      {expandida && !temEstrategia && (
+        <div className="border-t border-border pt-3">
+          <p className="text-xs text-muted-foreground text-center py-2">
+            Este relatório foi gerado antes da atualização de estratégia. Clique em <span className="font-medium text-foreground">Regerar Relatório</span> para ver a estratégia completa.
+          </p>
+        </div>
+      )}
       {expandida && temEstrategia && (
         <div className="border-t border-border pt-4 space-y-5">
 
