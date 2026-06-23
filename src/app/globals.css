@@ -58,3 +58,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media print {
+  .print\:hidden { display: none !important; }
+  nav, aside, header, footer { display: none !important; }
+  body { background: white !important; color: black !important; }
+  .border-border { border-color: #e5e7eb !important; }
+  * { color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

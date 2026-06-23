@@ -13,6 +13,13 @@ import {
   anamneseCompleta,
   SECOES,
 } from "@/lib/anamnese/flow-engine";
+import {
+  IlustracaoAgachamento,
+  IlustracaoDorsiflexao,
+  IlustracaoPosterior,
+  IlustracaoToracica,
+  IlustracaoOmbro,
+} from "./MobilidadeIlustracao";
 import type { Respostas, RespostaValor } from "@/types/anamnese";
 
 interface Props {
@@ -148,8 +155,16 @@ export function AnamneseWizard({ token, nomeAluno, respostasIniciais }: Props) {
               </p>
             )}
             <h1 className="mb-1 text-2xl font-bold leading-snug">{pergunta.titulo}</h1>
-            {pergunta.descricao && <p className="mb-6 text-slate-500">{pergunta.descricao}</p>}
-            {!pergunta.descricao && <div className="mb-6" />}
+            {pergunta.descricao && <p className="mb-4 text-slate-500 text-sm leading-relaxed">{pergunta.descricao}</p>}
+
+            {pergunta.id === "mob_agachamento" && <IlustracaoAgachamento />}
+            {pergunta.id === "mob_dorsiflexao" && <IlustracaoDorsiflexao />}
+            {pergunta.id === "mob_posterior" && <IlustracaoPosterior />}
+            {pergunta.id === "mob_toracica" && <IlustracaoToracica />}
+            {pergunta.id === "mob_ombro" && <IlustracaoOmbro />}
+
+            {!pergunta.descricao && !pergunta.id.startsWith("mob_") && <div className="mb-6" />}
+            {(pergunta.descricao || pergunta.id.startsWith("mob_")) && <div className="mb-4" />}
 
             <ConversationalStep
               pergunta={pergunta}

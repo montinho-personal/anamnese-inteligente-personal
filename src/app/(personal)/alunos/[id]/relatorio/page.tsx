@@ -7,6 +7,8 @@ import { SecaoRelatorio, ListaItens } from "@/components/relatorio/secao";
 import { ScoreRadar } from "@/components/relatorio/score-radar";
 import { ScoreGauge } from "@/components/relatorio/score-gauge";
 import { RegerarButton } from "@/components/relatorio/regerar-button";
+import { RelatorioChat } from "@/components/relatorio/RelatorioChat";
+import { BaixarPdfButton } from "@/components/relatorio/BaixarPdfButton";
 import {
   ArrowLeft, FileText, Award, ShieldAlert, TrendingDown, Brain,
   Map, Dumbbell, Ban, Wind, Flame, LayoutGrid, BarChart3, CalendarRange, Target, HeartHandshake,
@@ -47,7 +49,10 @@ export default async function RelatorioPage({ params }: { params: { id: string }
           </h1>
           <p className="text-muted-foreground text-sm">Visível apenas para você</p>
         </div>
-        {r && <RegerarButton relatorioId={r.id} />}
+        <div className="flex gap-2 print:hidden">
+          {r && r.status === "concluido" && <BaixarPdfButton nomeAluno={aluno.nome} />}
+          {r && <RegerarButton relatorioId={r.id} />}
+        </div>
       </div>
 
       {!r && (
@@ -242,6 +247,10 @@ export default async function RelatorioPage({ params }: { params: { id: string }
             {r.tokens_ia_usados ? `${r.tokens_ia_usados} tokens · ` : ""}
             Gerado por IA · {r.gerado_em ? new Date(r.gerado_em).toLocaleDateString("pt-BR") : ""}
           </p>
+
+          <div className="print:hidden">
+            <RelatorioChat alunoId={aluno.id} nomeAluno={aluno.nome.split(" ")[0]} />
+          </div>
         </div>
       )}
     </div>

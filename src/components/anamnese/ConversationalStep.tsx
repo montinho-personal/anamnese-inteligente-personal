@@ -163,6 +163,10 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
       const min = pergunta.escalaMin ?? 1;
       const max = pergunta.escalaMax ?? 5;
       const opcoes = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+      const selecionado = Number(valor);
+      const labelSelecionado = pergunta.escalaLabels && selecionado >= min
+        ? pergunta.escalaLabels[selecionado - min]
+        : null;
       return (
         <div className="space-y-4">
           <div className="flex justify-between text-xs text-slate-500">
@@ -176,13 +180,21 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
                 onClick={() => escolhaUnica(String(n))}
                 className={cn(
                   "flex-1 rounded-xl border-2 py-4 text-lg font-semibold transition-all",
-                  Number(valor) === n ? "border-indigo-600 bg-indigo-50 text-indigo-700" : "border-slate-200 hover:border-indigo-300",
+                  selecionado === n ? "border-indigo-600 bg-indigo-50 text-indigo-700" : "border-slate-200 hover:border-indigo-300",
                 )}
               >
                 {n}
               </button>
             ))}
           </div>
+          {labelSelecionado && (
+            <p className="rounded-lg bg-indigo-50 border border-indigo-100 px-4 py-3 text-sm text-indigo-800 leading-relaxed">
+              {selecionado} — {labelSelecionado}
+            </p>
+          )}
+          {!labelSelecionado && pergunta.dica && (
+            <p className="text-sm text-slate-400 leading-relaxed">💡 {pergunta.dica}</p>
+          )}
         </div>
       );
     }
