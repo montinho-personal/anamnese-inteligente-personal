@@ -27,9 +27,9 @@ export default async function PersonalLayout({
     : { count: 0 };
 
   return (
-    <div className="dark min-h-screen flex bg-background text-foreground">
+    <div className="dark min-h-screen flex bg-background text-foreground overflow-x-hidden">
       <Sidebar alertasPendentes={count ?? 0} />
-      <main className="flex-1 min-w-0 pb-16 md:pb-0">
+      <main className="flex-1 min-w-0 overflow-x-hidden pb-16 md:pb-0">
         <div className="mx-auto max-w-6xl p-4 md:p-8">{children}</div>
       </main>
       <MobileNav alertasPendentes={count ?? 0} />

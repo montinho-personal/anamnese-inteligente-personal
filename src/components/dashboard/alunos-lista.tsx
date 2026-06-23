@@ -47,7 +47,7 @@ export function AlunosLista({ alunos }: { alunos: Aluno[] }) {
             className="pl-9"
           />
         </div>
-        <div className="flex gap-1 shrink-0">
+        <div className="flex flex-wrap gap-1 shrink-0">
           <Button
             variant={ordem === "recente" ? "secondary" : "ghost"}
             size="sm"
