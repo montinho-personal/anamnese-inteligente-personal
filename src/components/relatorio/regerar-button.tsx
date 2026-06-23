@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCw } from "lucide-react";
@@ -23,11 +23,7 @@ export function RegerarButton({ relatorioId, initiallyGenerating = false }: Prop
         const res = await fetch(`/api/relatorio-status?id=${relatorioId}`);
         if (!res.ok) return;
         const { status } = await res.json() as { status: string };
-        if (status === "concluido") {
-          stopPolling();
-          setGerando(false);
-          router.refresh();
-        } else if (status === "falhou") {
+        if (status === "concluido" || status === "falhou") {
           stopPolling();
           setGerando(false);
           router.refresh();
@@ -42,7 +38,8 @@ export function RegerarButton({ relatorioId, initiallyGenerating = false }: Prop
 
   useEffect(() => () => stopPolling(), []);
 
-  async function regerar() {
+  const regerar = useCallback(async () => {
+    stopPolling();
     setGerando(true);
     setErro(null);
     try {
@@ -59,7 +56,6 @@ export function RegerarButton({ relatorioId, initiallyGenerating = false }: Prop
         throw new Error(msg);
       }
 
-      // Read stream — server sends keep-alive spaces + real chunks, ends with __DONE__ or __ERROR__
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let accumulated = "";
@@ -76,26 +72,25 @@ export function RegerarButton({ relatorioId, initiallyGenerating = false }: Prop
         throw new Error(accumulated.slice(idx + 9).trim() || "Erro ao gerar relatório");
       }
 
-      // Success — status __DONE__ received
       setGerando(false);
       router.refresh();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Erro desconhecido";
-      // Any network/fetch error: fall back to polling (server may still be running)
       if (msg === "Failed to fetch" || msg.toLowerCase().includes("network") || e instanceof TypeError) {
         startPolling();
-        // Keep gerando=true; polling will clear it when done
       } else {
         setErro(msg);
         setGerando(false);
       }
     }
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [relatorioId]);
 
+  // When status is already "gerando" on page load, trigger a new generation
+  // immediately instead of polling forever. This recovers stuck reports.
   useEffect(() => {
     if (initiallyGenerating) {
-      setGerando(true);
-      startPolling();
+      regerar();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
