@@ -20,76 +20,49 @@ Sua tarefa é analisar a anamnese completa de um aluno e produzir um RELATÓRIO 
 Fundamente todas as recomendações nas seguintes referências científicas: ${REFERENCIAS_CIENTIFICAS.join(", ")}.
 E nas seguintes referências práticas de alto rendimento: ${REFERENCIAS_PRATICAS.join(", ")}.
 
-REGRA DE CONCISÃO: Seja DIRETO e CONCISO. Máximo 1-2 frases por campo de texto. Listas com no máximo 4 itens. O JSON completo deve caber em 3500 tokens.
-
 REGRAS CRÍTICAS:
-- Priorize SEMPRE a segurança. Triagens cardiovasculares positivas exigem cautela explícita e recomendação de liberação médica.
-- Adapte exercícios a dores ortopédicas, cirurgias e limitações relatadas.
-- Considere o local de treino e os equipamentos disponíveis em todas as recomendações de exercícios.
-- Seja específico: cite exercícios, séries, faixas de repetições e justificativas reais.
-- Responda SOMENTE com um objeto JSON válido, sem markdown, sem texto antes ou depois, sem blocos de código.
+- Segurança primeiro. Triagens cardiovasculares positivas exigem cautela e liberação médica.
+- Adapte exercícios às limitações físicas relatadas.
+- Considere o local de treino e equipamentos disponíveis.
+- Responda SOMENTE com um objeto JSON válido, sem markdown, sem texto fora do JSON.
+- SEJA CONCISO: máximo 1 frase por texto, máximo 3 itens por lista. JSON deve ter no máximo 2500 tokens.
 
-O JSON DEVE seguir EXATAMENTE este schema:
+O JSON DEVE seguir EXATAMENTE este schema (sem campos extras):
 {
-  "resumo_executivo": "string — resumo profissional completo do aluno",
+  "resumo_executivo": "string",
   "classificacao": { "nivel": "Iniciante|Intermediário|Avançado", "justificativa": "string" },
   "riscos": {
-    "cardiovascular": { "nivel": "alta|media|baixa", "descricao": "string", "evitar": ["string"], "fazer": ["string"] },
-    "ortopedico": { "nivel": "alta|media|baixa", "descricao": "string", "evitar": ["string"], "fazer": ["string"] },
+    "cardiovascular": { "nivel": "alta|media|baixa", "descricao": "string", "evitar": ["string","string"], "fazer": ["string","string"] },
+    "ortopedico": { "nivel": "alta|media|baixa", "descricao": "string", "evitar": ["string","string"], "fazer": ["string","string"] },
     "comportamental": { "nivel": "alta|media|baixa", "descricao": "string", "evitar": ["string"], "fazer": ["string"] }
   },
-  "fatores_abandono": { "riscos_identificados": ["string"], "estrategias": ["string"] },
+  "fatores_abandono": { "riscos_identificados": ["string","string"], "estrategias": ["string","string"] },
   "perfil_comportamental": { "perfil": "Analítico|Competitivo|Executor|Emocional", "justificativa": "string" },
-  "mapa_construcao_fisica": { "pontos_fortes": ["string"], "pontos_fracos": ["string"], "gargalos": ["string"], "oportunidades": ["string"] },
-  "exercicios_recomendados": [ { "grupo_muscular": "string", "exercicios": ["string"], "justificativa": "string" } ],
+  "mapa_construcao_fisica": { "pontos_fortes": ["string","string"], "pontos_fracos": ["string","string"], "gargalos": ["string"], "oportunidades": ["string"] },
+  "exercicios_recomendados": [ { "grupo_muscular": "string", "exercicios": ["string","string","string"], "justificativa": "string" } ],
   "exercicios_evitar": [ { "exercicio": "string", "justificativa": "string" } ],
   "protocolo_mobilidade": [ { "alvo": "string", "exercicio": "string", "motivo": "string" } ],
   "protocolo_alongamento": [ { "alvo": "string", "exercicio": "string", "motivo": "string" } ],
-  "aquecimento": { "descricao": "string", "passos": ["string"] },
+  "aquecimento": { "descricao": "string", "passos": ["string","string","string"] },
   "divisoes_treino": [
-    { "nome": "string", "estrutura": "string", "pros": ["string"], "contras": ["string"] }
+    { "nome": "string", "estrutura": "string", "pros": ["string","string"], "contras": ["string","string"] }
   ],
   "volume_semanal": [ { "grupo_muscular": "string", "series_semanais": "string" } ],
-  "periodizacao": [ { "duracao": "4 semanas|8 semanas|12 semanas", "estrategia": "string", "racional": "string" } ],
+  "periodizacao": [
+    { "duracao": "4 semanas", "estrategia": "string", "racional": "string" },
+    { "duracao": "8 semanas", "estrategia": "string", "racional": "string" },
+    { "duracao": "12 semanas", "estrategia": "string", "racional": "string" }
+  ],
   "scores": { "potencial_resultado": 0, "potencial_aderencia": 0, "risco_lesao": 0, "risco_abandono": 0 },
-  "plano_retencao": { "estrategias": ["string"], "tarefas": ["string"] },
-  "analise_postural": {
-    "desvios_relatados": ["string"],
-    "nivel_confianca": "Confirmado por profissional|Provável|Autopercepção|Não confirmado",
-    "impactos_treino": ["string"],
-    "cuidados_recomendados": ["string"],
-    "exercicios_atencao": ["string"],
-    "exercicios_corretivos": ["string"],
-    "mobilidade_sugerida": ["string"],
-    "fortalecimento_sugerido": ["string"]
-  },
-  "performance_esportiva": {
-    "esporte": "string",
-    "demandas_fisicas": ["string"],
-    "riscos_especificos": ["string"],
-    "capacidades_prioritarias": ["string"],
-    "grupos_musculares_chave": ["string"],
-    "limitacoes_identificadas": ["string"],
-    "treino_complementar": ["string"],
-    "mobilidade_especifica": ["string"],
-    "preventivo": ["string"]
-  },
-  "evolucao_aluno": {
-    "melhorou": ["string — o que evoluiu positivamente desde a última anamnese"],
-    "piorou": ["string — o que regrediu ou piorou"],
-    "permaneceu": ["string — o que permaneceu igual"],
-    "novos_riscos": ["string — novos riscos identificados que não existiam antes"],
-    "novas_oportunidades": ["string — novas oportunidades de melhora identificadas"]
-  }
+  "plano_retencao": { "estrategias": ["string","string"], "tarefas": ["string","string"] }
 }
 
-REGRAS DE CAMPOS CONDICIONAIS:
-- "divisoes_treino" deve conter EXATAMENTE 3 opções, cada uma com todos os campos da estratégia completa.
-- "periodizacao" deve conter as fases de 4, 8 e 12 semanas.
-- "analise_postural" só inclua se postural_tem_desvio = "sim" ou autoavaliação realizada. NUNCA gere diagnósticos médicos — use apenas para individualizar o treino.
-- "performance_esportiva" só inclua se objetivo incluir "performance".
-- "evolucao_aluno" só inclua se houver HISTÓRICO DE ANAMNESES ANTERIORES fornecido no prompt. Se não houver histórico, omita completamente.
-- Os scores são inteiros de 0 a 100.`;
+REGRAS:
+- "divisoes_treino" deve conter EXATAMENTE 3 opções.
+- "analise_postural": inclua SOMENTE se postural_tem_desvio="sim", com campos: desvios_relatados, nivel_confianca, impactos_treino, cuidados_recomendados, exercicios_corretivos (máx 3 itens cada).
+- "performance_esportiva": inclua SOMENTE se objetivo incluir "performance", com campos: esporte, demandas_fisicas, grupos_musculares_chave, treino_complementar, preventivo (máx 3 itens cada).
+- "evolucao_aluno": inclua SOMENTE se houver histórico, com campos: melhorou, piorou, permaneceu (máx 3 itens cada).
+- Scores: inteiros 0-100.`;
 
 export interface HistoricoAnamnese {
   versao: number;

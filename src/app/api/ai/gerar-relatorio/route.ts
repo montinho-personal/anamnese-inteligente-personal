@@ -138,7 +138,7 @@ export async function POST(req: Request) {
             tipo: "comportamental",
             criticidade: "media",
             titulo: "Falha na geração do relatório",
-            descricao: `Não foi possível gerar o relatório de ${aluno.nome}. Tente regerar manualmente.`,
+            descricao: `Erro ao gerar relatório de ${aluno.nome}: ${e instanceof Error ? e.message : "Erro desconhecido"}`,
           });
         }
         controller.enqueue(encoder.encode(`\n\n__ERROR__${e instanceof Error ? e.message : "Erro desconhecido"}`));
