@@ -11,8 +11,6 @@ import { ObservacoesSection } from "@/components/dashboard/observacoes-section";
 import { iniciais, formatarData } from "@/lib/utils";
 import { ArrowLeft, FileText, Activity, History, Link2 } from "lucide-react";
 import type { Aluno, Anamnese, Relatorio, Observacao } from "@/types/database";
-import { Suspense } from "react";
-import { InsightsSection } from "@/components/aluno/insights-section";
 
 export const dynamic = "force-dynamic";
 
@@ -162,9 +160,6 @@ export default async function AlunoPage({ params }: { params: { id: string } }) 
         </Card>
       </div>
       <ObservacoesSection alunoId={aluno.id} observacoesIniciais={observacoes} />
-      <Suspense fallback={<div className="h-24 rounded-lg bg-muted animate-pulse" />}>
-        <InsightsSection alunoId={aluno.id} aluno={aluno} />
-      </Suspense>
     </div>
   );
 }
