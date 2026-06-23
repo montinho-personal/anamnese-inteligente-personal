@@ -69,7 +69,7 @@ export async function POST(req: Request) {
         let accumulatedText = "";
 
         const anthropicStream = await client.messages.stream({
-          model: "claude-haiku-4-5-20251001",
+          model: "claude-sonnet-4-6",
           max_tokens: 4000,
           messages: [{ role: "user", content: montarPromptEstrategia(divisao, anamnese.respostas as Respostas) }],
         });
