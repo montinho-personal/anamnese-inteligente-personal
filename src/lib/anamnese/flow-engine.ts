@@ -17,6 +17,7 @@ export const SECOES: SecaoAnamnese[] = [
   { id: "ortopedica", titulo: "Triagem Ortopédica", descricao: "Articulações e dores" },
   { id: "cardiovascular", titulo: "Triagem Cardiovascular", descricao: "Saúde do coração" },
   { id: "mobilidade", titulo: "Mobilidade", descricao: "Amplitude de movimento" },
+  { id: "postural", titulo: "Desvios Posturais", descricao: "Avaliação da postura" },
   { id: "recuperacao", titulo: "Recuperação", descricao: "Sono e descanso" },
   { id: "nutricao", titulo: "Nutrição", descricao: "Alimentação e hábitos" },
   { id: "comportamento", titulo: "Comportamento", descricao: "Motivação e adesão" },
@@ -131,6 +132,132 @@ const CARDIO_ITENS: { valor: string; label: string }[] = [
   { valor: "avc", label: "AVC" },
   { valor: "infarto", label: "Infarto" },
 ];
+
+// ---------------------------------------------------------------------------
+// Postural deviations
+// ---------------------------------------------------------------------------
+const DESVIOS_POSTURAIS: { valor: string; label: string }[] = [
+  { valor: "cabeca_ant", label: "Cabeça anteriorizada" },
+  { valor: "ombros_proj", label: "Ombros projetados para frente" },
+  { valor: "hipercifose", label: "Hipercifose torácica" },
+  { valor: "hiperlordose", label: "Hiperlordose lombar" },
+  { valor: "retif_cerv", label: "Retificação cervical" },
+  { valor: "retif_lombar", label: "Retificação lombar" },
+  { valor: "escoliose", label: "Escoliose" },
+  { valor: "escapulas", label: "Escápulas aladas" },
+  { valor: "joelho_valgo", label: "Joelho valgo (joelhos para dentro)" },
+  { valor: "joelho_varo", label: "Joelho varo (joelhos para fora)" },
+  { valor: "pe_plano", label: "Pé plano (pé chato)" },
+  { valor: "pe_cavo", label: "Pé cavo" },
+  { valor: "antev_pelv", label: "Anteversão pélvica" },
+  { valor: "retrov_pelv", label: "Retroversão pélvica" },
+  { valor: "outro", label: "Outro" },
+  { valor: "incerto", label: "Não tenho certeza" },
+];
+
+function desviosSelecionados(respostas: Respostas): string[] {
+  const r = respostas["postural_desvios"];
+  return Array.isArray(r) ? (r as string[]) : [];
+}
+
+function perguntasDesvio(desvio: { valor: string; label: string }): Pergunta[] {
+  const cond = (r: Respostas) =>
+    r["postural_tem_desvio"] === "sim" && desviosSelecionados(r).includes(desvio.valor);
+
+  const labelMin = desvio.valor === "outro" ? "esse desvio" : desvio.label.toLowerCase();
+
+  const perguntas: Pergunta[] = [];
+
+  if (desvio.valor === "outro") {
+    perguntas.push({
+      id: "postural_outro_nome",
+      secao: "postural",
+      titulo: "Qual outro desvio você possui?",
+      tipo: "texto",
+      placeholder: "Descreva o desvio postural",
+      dica: "Ex.: genu recurvatum, hiperlordose cervical, síndrome cruzada inferior...",
+      condicao: cond,
+    });
+  }
+
+  perguntas.push(
+    {
+      id: `post_${desvio.valor}_quem`,
+      secao: "postural",
+      titulo: `Quem identificou ${labelMin}?`,
+      tipo: "escolha_unica",
+      opcoes: [
+        { valor: "medico", label: "Médico" },
+        { valor: "fisio", label: "Fisioterapeuta" },
+        { valor: "personal", label: "Personal Trainer" },
+        { valor: "avaliacao", label: "Avaliação postural" },
+        { valor: "eu_mesmo", label: "Eu mesmo percebi" },
+        { valor: "outro_prof", label: "Outro profissional" },
+      ],
+      condicao: cond,
+    },
+    {
+      id: `post_${desvio.valor}_diagnostico`,
+      secao: "postural",
+      titulo: `Existe diagnóstico formal de ${labelMin}?`,
+      tipo: "sim_nao",
+      condicao: cond,
+    },
+    {
+      id: `post_${desvio.valor}_tempo`,
+      secao: "postural",
+      titulo: `Há quanto tempo você percebe ${labelMin}?`,
+      tipo: "escolha_unica",
+      opcoes: [
+        { valor: "menos_1a", label: "Menos de 1 ano" },
+        { valor: "1_3a", label: "1 a 3 anos" },
+        { valor: "mais_3a", label: "Mais de 3 anos" },
+        { valor: "sempre", label: "Desde sempre / não sei" },
+      ],
+      condicao: cond,
+    },
+    {
+      id: `post_${desvio.valor}_dor`,
+      secao: "postural",
+      titulo: `Há dor associada a ${labelMin}?`,
+      tipo: "sim_nao",
+      dica: "Dor recorrente ou constante nessa região pode indicar sobrecarga estrutural.",
+      condicao: cond,
+    },
+    {
+      id: `post_${desvio.valor}_limitacao`,
+      secao: "postural",
+      titulo: `Esse desvio causa limitação de movimento?`,
+      tipo: "sim_nao",
+      condicao: cond,
+    },
+    {
+      id: `post_${desvio.valor}_forca`,
+      secao: "postural",
+      titulo: `Você percebe perda de força relacionada a esse desvio?`,
+      tipo: "sim_nao",
+      condicao: cond,
+    },
+    {
+      id: `post_${desvio.valor}_exercicio`,
+      secao: "postural",
+      titulo: `Esse desvio interfere em algum exercício?`,
+      tipo: "sim_nao",
+      condicao: cond,
+    },
+    {
+      id: `post_${desvio.valor}_exercicio_quais`,
+      secao: "postural",
+      titulo: "Quais exercícios são afetados?",
+      tipo: "texto",
+      placeholder: "Ex.: agachamento, desenvolvimento de ombros...",
+      dica: "Cite os exercícios onde sente dificuldade, dor ou compensação por causa desse desvio.",
+      condicao: (r) => cond(r) && r[`post_${desvio.valor}_exercicio`] === "sim",
+    },
+  );
+
+  return perguntas;
+}
 
 // ---------------------------------------------------------------------------
 // The full ordered list of questions
@@ -479,6 +606,78 @@ export const PERGUNTAS: Pergunta[] = [
       "Consigo puxar o joelho bem próximo ao peito sem dor.",
       "O joelho toca o peito facilmente, sem dor ou tensão em nenhum dos lados.",
     ],
+  },
+
+  // DESVIOS POSTURAIS
+  {
+    id: "postural_tem_desvio", secao: "postural",
+    titulo: "Você possui ou já foi informado por algum profissional que possui algum desvio postural?",
+    tipo: "escolha_unica", obrigatoria: true,
+    opcoes: [
+      { valor: "nao", label: "Não" },
+      { valor: "sim", label: "Sim" },
+      { valor: "nao_sei", label: "Não sei informar" },
+    ],
+  },
+
+  // — Ramo SIM: seleção de desvios
+  {
+    id: "postural_desvios", secao: "postural",
+    titulo: "Quais desvios posturais você possui ou suspeita possuir?",
+    descricao: "Pode escolher mais de uma opção",
+    tipo: "escolha_multipla",
+    opcoes: DESVIOS_POSTURAIS,
+    condicao: (r) => r["postural_tem_desvio"] === "sim",
+  },
+
+  // — Aprofundamento por desvio
+  ...DESVIOS_POSTURAIS
+    .filter((d) => d.valor !== "incerto")
+    .flatMap(perguntasDesvio),
+
+  // — Ramo NÃO SEI: autoavaliação
+  {
+    id: "postural_autoavaliacao", secao: "postural",
+    titulo: "Você gostaria de realizar uma autoavaliação simples?",
+    descricao: "São apenas 5 perguntas rápidas que ajudam o personal a entender melhor sua postura. Não geram diagnóstico.",
+    tipo: "sim_nao",
+    dica: "As respostas não substituem uma avaliação profissional, mas ajudam o personal a personalizar ainda mais o seu treino.",
+    condicao: (r) => r["postural_tem_desvio"] === "nao_sei",
+  },
+  {
+    id: "postural_auto_ombros", secao: "postural",
+    titulo: "Seus ombros parecem arredondados para frente?",
+    tipo: "sim_nao",
+    dica: "Observe-se de lado no espelho: os ombros ficam à frente do tronco?",
+    condicao: (r) => r["postural_tem_desvio"] === "nao_sei" && r["postural_autoavaliacao"] === "sim",
+  },
+  {
+    id: "postural_auto_cabeca", secao: "postural",
+    titulo: "Sua cabeça parece ficar projetada para frente?",
+    tipo: "sim_nao",
+    dica: "Observe de lado: a orelha fica à frente do ombro?",
+    condicao: (r) => r["postural_tem_desvio"] === "nao_sei" && r["postural_autoavaliacao"] === "sim",
+  },
+  {
+    id: "postural_auto_ombro_altura", secao: "postural",
+    titulo: "Você percebe diferença de altura entre os dois ombros?",
+    tipo: "sim_nao",
+    dica: "Olhe no espelho de frente: um ombro fica visivelmente mais alto que o outro?",
+    condicao: (r) => r["postural_tem_desvio"] === "nao_sei" && r["postural_autoavaliacao"] === "sim",
+  },
+  {
+    id: "postural_auto_joelhos", secao: "postural",
+    titulo: "Seus joelhos tendem a ficar voltados para dentro ao se olhar de frente?",
+    tipo: "sim_nao",
+    dica: "Em pé, relaxado: os joelhos ficam próximos um do outro mesmo com os pés afastados?",
+    condicao: (r) => r["postural_tem_desvio"] === "nao_sei" && r["postural_autoavaliacao"] === "sim",
+  },
+  {
+    id: "postural_auto_lombar", secao: "postural",
+    titulo: "Você percebe um arco muito acentuado na região lombar?",
+    tipo: "sim_nao",
+    dica: "De lado no espelho: há uma curvatura exagerada na região da cintura, deixando a barriga projetada para frente?",
+    condicao: (r) => r["postural_tem_desvio"] === "nao_sei" && r["postural_autoavaliacao"] === "sim",
   },
 
   // RECUPERAÇÃO

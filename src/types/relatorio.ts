@@ -100,6 +100,17 @@ export interface PlanoRetencaoIA {
   tarefas: string[];
 }
 
+export interface AnalisePosturalIA {
+  desvios_relatados: string[];
+  nivel_confianca: "Confirmado por profissional" | "Provável" | "Autopercepção" | "Não confirmado";
+  impactos_treino: string[];
+  cuidados_recomendados: string[];
+  exercicios_atencao: string[];
+  exercicios_corretivos: string[];
+  mobilidade_sugerida: string[];
+  fortalecimento_sugerido: string[];
+}
+
 export interface PerformanceEsportivaIA {
   esporte: string;
   demandas_fisicas: string[];
@@ -130,6 +141,7 @@ export interface RelatorioIA {
   scores: ScoresIA;
   plano_retencao: PlanoRetencaoIA;
   performance_esportiva?: PerformanceEsportivaIA;
+  analise_postural?: AnalisePosturalIA;
 }
 
 import type { Criticidade } from "./database";

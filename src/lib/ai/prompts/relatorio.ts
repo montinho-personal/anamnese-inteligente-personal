@@ -49,6 +49,16 @@ O JSON DEVE seguir EXATAMENTE este schema:
   "periodizacao": [ { "duracao": "4 semanas|8 semanas|12 semanas", "estrategia": "string", "racional": "string" } ],
   "scores": { "potencial_resultado": 0, "potencial_aderencia": 0, "risco_lesao": 0, "risco_abandono": 0 },
   "plano_retencao": { "estrategias": ["string"], "tarefas": ["string"] },
+  "analise_postural": {
+    "desvios_relatados": ["string — nome de cada desvio informado pelo aluno"],
+    "nivel_confianca": "Confirmado por profissional|Provável|Autopercepção|Não confirmado",
+    "impactos_treino": ["string — consequências práticas para o treinamento: limitação de amplitude, instabilidade, sobrecarga articular, alteração de padrão motor, etc."],
+    "cuidados_recomendados": ["string — orientações gerais de cuidado e atenção"],
+    "exercicios_atencao": ["string — exercícios que merecem atenção ou adaptação por causa dos desvios"],
+    "exercicios_corretivos": ["string — exercícios corretivos específicos para os desvios relatados"],
+    "mobilidade_sugerida": ["string — exercícios de mobilidade prioritários para abordar os desvios"],
+    "fortalecimento_sugerido": ["string — exercícios de fortalecimento para compensar os desvios"]
+  },
   "performance_esportiva": {
     "esporte": "string — nome do esporte",
     "demandas_fisicas": ["string — quais capacidades físicas o esporte exige: força, velocidade, resistência, etc."],
@@ -62,7 +72,7 @@ O JSON DEVE seguir EXATAMENTE este schema:
   }
 }
 
-Os scores são inteiros de 0 a 100. "divisoes_treino" deve conter exatamente 3 opções com prós e contras. "periodizacao" deve conter as fases de 4, 8 e 12 semanas. O campo "performance_esportiva" só deve ser incluído se o aluno tiver selecionado o objetivo "performance" na anamnese — caso contrário, omita o campo completamente.`;
+Os scores são inteiros de 0 a 100. "divisoes_treino" deve conter exatamente 3 opções com prós e contras. "periodizacao" deve conter as fases de 4, 8 e 12 semanas. O campo "performance_esportiva" só deve ser incluído se o aluno tiver selecionado o objetivo "performance" — caso contrário, omita. O campo "analise_postural" só deve ser incluído se o aluno tiver informado desvios posturais (postural_tem_desvio = "sim") ou realizado a autoavaliação (postural_tem_desvio = "nao_sei" e postural_autoavaliacao = "sim") — caso contrário, omita. IMPORTANTE: Na analise_postural a IA NÃO deve assumir que o desvio é causa de dor nem gerar diagnósticos médicos — use os dados apenas para individualizar o treino, sugerir mobilidade, fortalecimento, progressões mais seguras e identificar possíveis limitações.`;
 
 /** Renders the answers into a labeled, human-readable block for the model. */
 export function montarPromptUsuario(respostas: Respostas): string {

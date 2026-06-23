@@ -11,7 +11,7 @@ import { RelatorioChat } from "@/components/relatorio/RelatorioChat";
 import { BaixarPdfButton } from "@/components/relatorio/BaixarPdfButton";
 import {
   ArrowLeft, FileText, Award, ShieldAlert, TrendingDown, Brain,
-  Map, Dumbbell, Ban, Wind, Flame, LayoutGrid, BarChart3, CalendarRange, Target, HeartHandshake, Trophy,
+  Map, Dumbbell, Ban, Wind, Flame, LayoutGrid, BarChart3, CalendarRange, Target, HeartHandshake, Trophy, PersonStanding,
 } from "lucide-react";
 import type { Aluno, Relatorio } from "@/types/database";
 
@@ -239,6 +239,32 @@ export default async function RelatorioPage({ params }: { params: { id: string }
             <SecaoRelatorio titulo="Plano de retenção" icon={HeartHandshake}>
               <ListaItens titulo="Estratégias" itens={r.plano_retencao.estrategias} />
               <ListaItens titulo="Tarefas" itens={r.plano_retencao.tarefas} />
+            </SecaoRelatorio>
+          )}
+
+          {r.analise_postural && (
+            <SecaoRelatorio titulo="Análise Postural" icon={PersonStanding}>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Desvios relatados:</span>
+                <div className="flex flex-wrap gap-1">
+                  {r.analise_postural.desvios_relatados.map((d, i) => (
+                    <Badge key={i} variant="secondary">{d}</Badge>
+                  ))}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Nível de confiança:</span>
+                <Badge variant={
+                  r.analise_postural.nivel_confianca === "Confirmado por profissional" ? "default" :
+                  r.analise_postural.nivel_confianca === "Provável" ? "warning" : "muted"
+                }>{r.analise_postural.nivel_confianca}</Badge>
+              </div>
+              <ListaItens titulo="Possíveis impactos no treinamento" itens={r.analise_postural.impactos_treino} />
+              <ListaItens titulo="Cuidados recomendados" itens={r.analise_postural.cuidados_recomendados} />
+              <ListaItens titulo="Exercícios que merecem atenção" itens={r.analise_postural.exercicios_atencao} />
+              <ListaItens titulo="Exercícios corretivos sugeridos" itens={r.analise_postural.exercicios_corretivos} />
+              <ListaItens titulo="Mobilidade sugerida" itens={r.analise_postural.mobilidade_sugerida} />
+              <ListaItens titulo="Fortalecimento sugerido" itens={r.analise_postural.fortalecimento_sugerido} />
             </SecaoRelatorio>
           )}
 

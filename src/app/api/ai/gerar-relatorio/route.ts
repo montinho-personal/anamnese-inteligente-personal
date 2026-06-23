@@ -61,6 +61,7 @@ export async function POST(req: Request) {
         scores: relatorio.scores,
         plano_retencao: relatorio.plano_retencao,
         performance_esportiva: relatorio.performance_esportiva ?? null,
+        analise_postural: relatorio.analise_postural ?? null,
         tokens_ia_usados: tokensUsados,
         gerado_em: new Date().toISOString(),
       })
