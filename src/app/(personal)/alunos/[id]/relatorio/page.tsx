@@ -28,14 +28,22 @@ export default async function RelatorioPage({ params }: { params: { id: string }
   const aluno = alunoData as Aluno | null;
   if (!aluno) notFound();
 
-  const { data: relData } = await supabase
+  const { data: relData, error: relError } = await supabase
     .from("relatorios")
     .select("*")
     .eq("aluno_id", aluno.id)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
+  if (relError) console.error("[RelatorioPage] DB error:", relError);
   const r = relData as Relatorio | null;
+
+  // Debug log — visible in Vercel Function logs
+  if (r) {
+    console.error("[RelatorioPage] relatorio id:", r.id, "status:", r.status, "keys com dados:",
+      Object.entries(r).filter(([, v]) => v !== null && v !== undefined).map(([k]) => k).join(", ")
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -108,6 +116,7 @@ export default async function RelatorioPage({ params }: { params: { id: string }
             <SecaoRelatorio titulo="Riscos" icon={ShieldAlert}>
               {(["cardiovascular", "ortopedico", "comportamental"] as const).map((k) => {
                 const risco = r.riscos![k];
+                if (!risco) return null;
                 return (
                   <div key={k} className="rounded-lg border border-border p-3 space-y-2">
                     <div className="flex items-center gap-2">
