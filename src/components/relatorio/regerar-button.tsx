@@ -81,6 +81,7 @@ export function RegerarButton({ relatorioId, initiallyGenerating = false }: Prop
       } else {
         setErro(msg);
         setGerando(false);
+        router.refresh();
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
