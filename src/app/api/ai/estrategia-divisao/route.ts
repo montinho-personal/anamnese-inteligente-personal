@@ -60,8 +60,8 @@ export async function POST(req: Request) {
   try {
     const client = new Anthropic({ apiKey });
     const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 2500,
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 2000,
       messages: [{ role: "user", content: montarPromptEstrategia(divisao, anamnese.respostas as Respostas) }],
     });
 
