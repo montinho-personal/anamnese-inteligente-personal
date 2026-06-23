@@ -61,6 +61,9 @@ export async function POST(req: Request) {
   const stream = new ReadableStream({
     async start(controller) {
       const send = (chunk: string) => controller.enqueue(encoder.encode(chunk));
+      const keepAlive = setInterval(() => {
+        try { controller.enqueue(encoder.encode(" ")); } catch { /* stream may be closed */ }
+      }, 3_000);
       try {
         const client = new Anthropic({ apiKey });
         let accumulatedText = "";
@@ -114,6 +117,7 @@ export async function POST(req: Request) {
         console.error("estrategia-divisao erro:", msg, e);
         send(`\n\n__ERROR__${msg}`);
       } finally {
+        clearInterval(keepAlive);
         controller.close();
       }
     },
