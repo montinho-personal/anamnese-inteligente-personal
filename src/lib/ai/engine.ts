@@ -5,7 +5,7 @@ import { parseRelatorio } from "./parsers/relatorio";
 import type { Respostas } from "@/types/anamnese";
 import type { RelatorioIA } from "@/types/relatorio";
 
-const MODEL = "claude-3-haiku-20240307";
+const MODEL = "claude-3-5-haiku-20241022";
 
 export interface ResultadoRelatorio {
   relatorio: RelatorioIA;
