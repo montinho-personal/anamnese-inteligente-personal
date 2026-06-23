@@ -155,7 +155,7 @@ export default async function RelatorioPage({ params }: { params: { id: string }
               {r.exercicios_recomendados.map((g, i) => (
                 <div key={i} className="rounded-lg border border-border p-3">
                   <p className="font-medium">{g.grupo_muscular}</p>
-                  <p className="text-muted-foreground">{g.exercicios.join(", ")}</p>
+                  <p className="text-muted-foreground">{(g.exercicios ?? []).join(", ")}</p>
                   <p className="text-xs text-muted-foreground mt-1">{g.justificativa}</p>
                 </div>
               ))}
@@ -256,7 +256,7 @@ export default async function RelatorioPage({ params }: { params: { id: string }
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">Desvios relatados:</span>
                 <div className="flex flex-wrap gap-1">
-                  {r.analise_postural.desvios_relatados.map((d, i) => (
+                  {(r.analise_postural.desvios_relatados ?? []).map((d, i) => (
                     <Badge key={i} variant="secondary">{d}</Badge>
                   ))}
                 </div>
