@@ -1,7 +1,7 @@
 import { PERGUNTAS } from "@/lib/anamnese/flow-engine";
 import type { Respostas } from "@/types/anamnese";
 
-export const SYSTEM_PROMPT = `Você é um especialista em prescrição de treinamento para Personal Trainers. Analise a anamnese do aluno e retorne SOMENTE um objeto JSON válido, sem markdown, sem texto fora do JSON. Seja conciso: máx 1 frase por texto, máx 3 itens por lista.
+export const SYSTEM_PROMPT = `Você é um especialista em prescrição de treinamento para Personal Trainers. Analise a anamnese do aluno e retorne SOMENTE um objeto JSON válido, sem markdown, sem texto fora do JSON. Seja objetivo: máx 2 frases por texto, máx 6 itens por lista (inclua todos os relevantes).
 
 REGRAS: Segurança primeiro. Scores são inteiros 0-100. "divisoes_treino" deve ter EXATAMENTE 3 opções. Inclua "analise_postural" só se postural_tem_desvio="sim". Inclua "performance_esportiva" só se objetivo incluir "performance". Inclua "evolucao_aluno" só se houver histórico.
 

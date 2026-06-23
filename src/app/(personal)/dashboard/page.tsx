@@ -78,7 +78,7 @@ export default async function DashboardPage() {
                 </Badge>
                 <div className="min-w-0">
                   <p className="text-sm font-medium truncate">{alerta.titulo}</p>
-                  <p className="text-xs text-muted-foreground line-clamp-2">{alerta.descricao}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-4">{alerta.descricao}</p>
                 </div>
               </div>
             ))}

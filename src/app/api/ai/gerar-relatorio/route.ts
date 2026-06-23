@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     .eq("status", "concluida")
     .lt("versao", anamnese.versao)
     .order("versao", { ascending: false })
-    .limit(3);
+    .limit(10);
 
   const historico: HistoricoAnamnese[] = (historicoData ?? []).map((h) => ({
     versao: h.versao as number,
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
 
         const message = await client.messages.create({
           model: "claude-haiku-4-5-20251001",
-          max_tokens: 1500,
+          max_tokens: 4000,
           system: SYSTEM_PROMPT,
           messages: [{
             role: "user",
