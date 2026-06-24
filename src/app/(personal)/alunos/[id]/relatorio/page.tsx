@@ -4,15 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SecaoRelatorio, ListaItens } from "@/components/relatorio/secao";
-import { ScoreRadar } from "@/components/relatorio/score-radar";
-import { ScoreGauge } from "@/components/relatorio/score-gauge";
 import { RegerarButton } from "@/components/relatorio/regerar-button";
 import { RelatorioChat } from "@/components/relatorio/RelatorioChat";
 import { BaixarPdfButton } from "@/components/relatorio/BaixarPdfButton";
 import { DivisaoExpandida } from "@/components/relatorio/DivisaoExpandida";
 import {
   ArrowLeft, FileText, Award, ShieldAlert, TrendingDown, Brain,
-  Map, Dumbbell, Ban, Wind, Flame, LayoutGrid, BarChart3, CalendarRange, Target, HeartHandshake, Trophy, PersonStanding, TrendingUp,
+  Map, Dumbbell, Ban, Wind, LayoutGrid, BarChart3, CalendarRange, Target, HeartHandshake, Trophy, PersonStanding, TrendingUp,
 } from "lucide-react";
 import type { Aluno, Relatorio } from "@/types/database";
 
@@ -90,20 +88,6 @@ export default async function RelatorioPage({ params }: { params: { id: string }
           <SecaoRelatorio titulo="Resumo executivo" icon={FileText}>
             <p className="whitespace-pre-line">{r.resumo_executivo}</p>
           </SecaoRelatorio>
-
-          {r.scores && (
-            <Card>
-              <CardContent className="grid gap-6 p-6 md:grid-cols-2">
-                <ScoreRadar scores={r.scores} />
-                <div className="grid grid-cols-2 gap-3">
-                  <ScoreGauge label="Pot. resultado" valor={r.scores.potencial_resultado} />
-                  <ScoreGauge label="Pot. aderência" valor={r.scores.potencial_aderencia} />
-                  <ScoreGauge label="Risco lesão" valor={r.scores.risco_lesao} inverso />
-                  <ScoreGauge label="Risco abandono" valor={r.scores.risco_abandono} inverso />
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           {r.classificacao && (
             <SecaoRelatorio titulo="Classificação" icon={Award}>
@@ -198,13 +182,6 @@ export default async function RelatorioPage({ params }: { params: { id: string }
             </SecaoRelatorio>
           )}
 
-          {r.aquecimento && (
-            <SecaoRelatorio titulo="Aquecimento ideal" icon={Flame}>
-              <p>{r.aquecimento.descricao}</p>
-              <ListaItens itens={r.aquecimento.passos} />
-            </SecaoRelatorio>
-          )}
-
           {r.divisoes_treino && (
             <SecaoRelatorio titulo="Divisões de treino sugeridas" icon={LayoutGrid}>
               <div className="space-y-3">
@@ -217,10 +194,10 @@ export default async function RelatorioPage({ params }: { params: { id: string }
 
           {r.volume_semanal && (
             <SecaoRelatorio titulo="Volume semanal sugerido" icon={BarChart3}>
-              <div className="grid gap-2 sm:grid-cols-2">
+              <div className="space-y-1">
                 {r.volume_semanal.map((v, i) => (
-                  <div key={i} className="flex justify-between rounded-lg border border-border px-3 py-2">
-                    <span>{v.grupo_muscular}</span>
+                  <div key={i} className="flex justify-between text-sm py-1 border-b border-border/40 last:border-0">
+                    <span className="text-muted-foreground">{v.grupo_muscular}</span>
                     <span className="font-medium">{v.series_semanais}</span>
                   </div>
                 ))}

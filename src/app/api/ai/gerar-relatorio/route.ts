@@ -105,7 +105,6 @@ export async function POST(req: Request) {
             exercicios_evitar: relatorio.exercicios_evitar,
             protocolo_mobilidade: relatorio.protocolo_mobilidade,
             protocolo_alongamento: relatorio.protocolo_alongamento,
-            aquecimento: relatorio.aquecimento,
             divisoes_treino: relatorio.divisoes_treino,
             volume_semanal: relatorio.volume_semanal,
             periodizacao: relatorio.periodizacao,
