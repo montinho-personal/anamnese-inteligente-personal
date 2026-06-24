@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       }, 3_000);
 
       try {
-        const client = new Anthropic({ apiKey, timeout: 60_000 });
+        const client = new Anthropic({ apiKey, timeout: 240_000 });
 
         const message = await client.messages.create({
           model: "claude-haiku-4-5-20251001",
