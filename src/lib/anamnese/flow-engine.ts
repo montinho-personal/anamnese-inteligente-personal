@@ -737,6 +737,45 @@ export const PERGUNTAS: Pergunta[] = [
   },
   { id: "fumante", secao: "nutricao", titulo: "Você fuma?", tipo: "sim_nao" },
 
+  // MEDICAMENTOS
+  {
+    id: "usa_medicamento", secao: "nutricao", titulo: "Você usa algum medicamento de uso contínuo?", tipo: "sim_nao",
+    dica: "Inclua remédios para pressão, tireoide, antidepressivos, ansiolíticos, corticoides, entre outros. Não precisa incluir vitaminas ou suplementos.",
+  },
+  {
+    id: "medicamentos_detalhe", secao: "nutricao", titulo: "Quais medicamentos você usa?", tipo: "textarea",
+    placeholder: "Ex.: Losartana 50mg (pressão), Levotiroxina 50mcg (tireoide), Escitalopram 10mg (ansiedade)...",
+    dica: "Inclua o nome e a finalidade se souber. Isso ajuda a identificar possíveis influências no treino, recuperação e composição corporal.",
+    condicao: (r) => r["usa_medicamento"] === "sim",
+  },
+  {
+    id: "anticoncepcional", secao: "nutricao", titulo: "Você usa anticoncepcional ou faz reposição hormonal?", tipo: "escolha_unica",
+    dica: "Hormônios femininos influenciam diretamente na retenção hídrica, disposição, força e composição corporal ao longo do ciclo.",
+    opcoes: [
+      { valor: "nao", label: "Não uso" },
+      { valor: "anticoncepcional_oral", label: "Anticoncepcional oral (pílula)" },
+      { valor: "anticoncepcional_injetavel", label: "Anticoncepcional injetável" },
+      { valor: "diu_hormonal", label: "DIU hormonal (Mirena, Kyleena...)" },
+      { valor: "implante", label: "Implante subcutâneo" },
+      { valor: "reposicao_hormonal", label: "Reposição hormonal (menopausa/andropausa)" },
+      { valor: "outro_hormonal", label: "Outro hormonal" },
+    ],
+    condicao: (r) => r["sexo"] === "F",
+  },
+  {
+    id: "ciclo_impacto", secao: "nutricao", titulo: "Seu ciclo menstrual afeta seu treino?", tipo: "escolha_unica",
+    dica: "Algumas fases do ciclo causam mais cansaço, retenção de líquido ou alteração de força — isso pode ser considerado no planejamento.",
+    opcoes: [
+      { valor: "nao", label: "Não percebo impacto" },
+      { valor: "fraqueza_cansaco", label: "Sinto fraqueza ou cansaço em algumas fases" },
+      { valor: "retencao", label: "Tenho bastante retenção de líquido" },
+      { valor: "humor_motivacao", label: "Afeta meu humor e motivação para treinar" },
+      { valor: "dor", label: "Tenho muita cólica ou dor que impede o treino" },
+      { valor: "varios", label: "Vários desses impactos" },
+    ],
+    condicao: (r) => r["sexo"] === "F",
+  },
+
   // COMPORTAMENTO
   { id: "motivacao_principal", secao: "comportamento", titulo: "Qual sua principal motivação para treinar?", tipo: "textarea", obrigatoria: true, dica: "Ex.: quero emagrecer para me sentir bem nas fotos da formatura em dezembro, quero ter energia para brincar com meus filhos..." },
   { id: "o_que_desmotiva", secao: "comportamento", titulo: "O que costuma te desmotivar?", tipo: "textarea", dica: "Ex.: cansaço após o trabalho, falta de resultado rápido, academia lotada, dor muscular excessiva..." },
