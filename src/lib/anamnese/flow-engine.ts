@@ -776,6 +776,20 @@ export const PERGUNTAS: Pergunta[] = [
     condicao: (r) => r["sexo"] === "F",
   },
 
+  {
+    id: "caneta_emagrecedora", secao: "nutricao", titulo: "Você está usando alguma 'caneta emagrecedora' (agonista GLP-1)?", tipo: "escolha_unica",
+    dica: "Esses medicamentos afetam apetite, composição corporal, massa muscular e energia disponível para o treino.",
+    opcoes: [
+      { valor: "nao", label: "Não uso" },
+      { valor: "ozempic", label: "Ozempic (semaglutida)" },
+      { valor: "wegovy", label: "Wegovy (semaglutida dose alta)" },
+      { valor: "mounjaro", label: "Mounjaro (tirzepatida)" },
+      { valor: "zepbound", label: "Zepbound / Tirzepatida" },
+      { valor: "retatrutida", label: "Retatrutida" },
+      { valor: "outra", label: "Outra" },
+    ],
+  },
+
   // COMPORTAMENTO
   { id: "motivacao_principal", secao: "comportamento", titulo: "Qual sua principal motivação para treinar?", tipo: "textarea", obrigatoria: true, dica: "Ex.: quero emagrecer para me sentir bem nas fotos da formatura em dezembro, quero ter energia para brincar com meus filhos..." },
   { id: "o_que_desmotiva", secao: "comportamento", titulo: "O que costuma te desmotivar?", tipo: "textarea", dica: "Ex.: cansaço após o trabalho, falta de resultado rápido, academia lotada, dor muscular excessiva..." },
