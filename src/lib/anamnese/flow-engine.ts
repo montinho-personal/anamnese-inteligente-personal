@@ -345,6 +345,8 @@ export const PERGUNTAS: Pergunta[] = [
       { valor: "ciclismo", label: "Ciclismo" },
       { valor: "natacao", label: "Natação" },
       { valor: "crossfit", label: "Crossfit" },
+      { valor: "jiu_jitsu", label: "Jiu-jitsu" },
+      { valor: "muay_thai", label: "Muay Thai" },
       { valor: "artes_marciais", label: "Artes marciais" },
       { valor: "tenis", label: "Tênis" },
       { valor: "beach_tennis", label: "Beach Tennis" },
