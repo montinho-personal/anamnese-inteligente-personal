@@ -66,7 +66,12 @@ export function AnamneseWizard({ token, nomeAluno, respostasIniciais }: Props) {
   // On mount: check localStorage — resume only if within 1 minute
   useEffect(() => {
     const pos = lerPosicaoSalva(token);
-    if (pos > 0) setIndice(pos);
+    if (pos > 0) {
+      setIndice(pos);
+    } else {
+      // Fresh start — clear answers so user fills from scratch
+      setRespostas({});
+    }
   }, [token]);
 
   // Persist position whenever it changes
