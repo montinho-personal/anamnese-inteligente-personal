@@ -204,30 +204,6 @@ export function DivisaoExpandida({ divisao: divisaoInicial, divisaoIndex, relato
             </div>
           )}
 
-          {/* INTENSITY */}
-          {divisao.intensidade && (
-            <div className="rounded-lg bg-indigo-50 border border-indigo-100 p-3 space-y-2">
-              <p className="font-medium text-sm">Intensidade recomendada</p>
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">RIR</p>
-                  <p className="font-semibold text-sm">{divisao.intensidade.rir}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">RPE</p>
-                  <p className="font-semibold text-sm">{divisao.intensidade.rpe}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Falha</p>
-                  <p className="font-semibold text-xs leading-tight">{divisao.intensidade.proximidade_falha}</p>
-                </div>
-              </div>
-              {divisao.intensidade.justificativa && (
-                <p className="text-xs text-muted-foreground">{divisao.intensidade.justificativa}</p>
-              )}
-            </div>
-          )}
-
           {/* ADVANCED TECHNIQUES */}
           {divisao.tecnicas_avancadas && divisao.tecnicas_avancadas.length > 0 && (
             <div>
