@@ -5,7 +5,7 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, UserCheck, AlertTriangle, Bell, Plus } from "lucide-react";
+import { Users, UserCheck, AlertTriangle, Bell, Plus, FlaskConical, ExternalLink } from "lucide-react";
 import { diasDesde, iniciais } from "@/lib/utils";
 import type { Aluno, Alerta } from "@/types/database";
 
@@ -30,6 +30,9 @@ export default async function DashboardPage() {
   const inativos = alunos.filter((a) => a.status === "inativo").length;
   const emRisco = alunos.filter((a) => diasDesde(a.updated_at) > 7).length;
 
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const alunoTeste = alunos[0] ?? null;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -50,6 +53,29 @@ export default async function DashboardPage() {
         <StatCard titulo="Em risco" valor={emRisco} icon={AlertTriangle} cor="text-amber-400" descricao="Sem atividade há 7+ dias" />
         <StatCard titulo="Inativos" valor={inativos} icon={Users} cor="text-slate-400" />
       </div>
+
+      {alunoTeste && (
+        <Card className="border-dashed border-amber-500/40 bg-amber-500/5">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm text-amber-500">
+              <FlaskConical className="h-4 w-4" /> Área de testes
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-3">
+            <Button asChild variant="outline" size="sm" className="gap-1.5">
+              <a href={`${APP_URL}/anamnese/${alunoTeste.token_anamnese}`} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="h-3.5 w-3.5" /> Formulário de anamnese
+              </a>
+            </Button>
+            <Button asChild variant="outline" size="sm" className="gap-1.5">
+              <a href={`${APP_URL}/anamnese/${alunoTeste.token_anamnese}/checkin`} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="h-3.5 w-3.5" /> Check-in semanal
+              </a>
+            </Button>
+            <p className="w-full text-xs text-muted-foreground">Usando aluno: <span className="font-medium">{alunoTeste.nome}</span></p>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
