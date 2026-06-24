@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConversationalStep } from "./ConversationalStep";
@@ -29,17 +29,50 @@ interface Props {
   respostasIniciais: Respostas;
 }
 
+const RESUME_TTL_MS = 60_000; // 1 minuto
+
+function storageKey(token: string) {
+  return `anamnese_pos_${token}`;
+}
+
+function lerPosicaoSalva(token: string): number {
+  try {
+    const raw = localStorage.getItem(storageKey(token));
+    if (!raw) return 0;
+    const { indice, ts } = JSON.parse(raw) as { indice: number; ts: number };
+    if (Date.now() - ts < RESUME_TTL_MS) return indice;
+  } catch { /* ignore */ }
+  return 0;
+}
+
+function salvarPosicao(token: string, indice: number) {
+  try {
+    localStorage.setItem(storageKey(token), JSON.stringify({ indice, ts: Date.now() }));
+  } catch { /* ignore */ }
+}
+
+function limparPosicao(token: string) {
+  try { localStorage.removeItem(storageKey(token)); } catch { /* ignore */ }
+}
+
 export function AnamneseWizard({ token, nomeAluno, respostasIniciais }: Props) {
   const router = useRouter();
   const [respostas, setRespostas] = useState<Respostas>(respostasIniciais);
-  const [indice, setIndice] = useState<number>(() => {
-    const visiveis = perguntasVisiveis(respostasIniciais);
-    const primeira = visiveis.findIndex((p) => respostasIniciais[p.id] === undefined);
-    return primeira === -1 ? 0 : primeira;
-  });
+  const [indice, setIndice] = useState<number>(0);
   const [salvando, setSalvando] = useState(false);
   const [direcao, setDirecao] = useState(1);
   const salvarTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // On mount: check localStorage — resume only if within 1 minute
+  useEffect(() => {
+    const pos = lerPosicaoSalva(token);
+    if (pos > 0) setIndice(pos);
+  }, [token]);
+
+  // Persist position whenever it changes
+  useEffect(() => {
+    salvarPosicao(token, indice);
+  }, [token, indice]);
 
   const visiveis = perguntasVisiveis(respostas);
   const pergunta = visiveis[Math.min(indice, visiveis.length - 1)];
@@ -94,6 +127,7 @@ export function AnamneseWizard({ token, nomeAluno, respostasIniciais }: Props) {
       });
       const json = await res.json();
       if (json.concluida) {
+        limparPosicao(token);
         router.push(`/anamnese/${token}/obrigado`);
         return;
       }
