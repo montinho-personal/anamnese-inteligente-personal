@@ -32,7 +32,10 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
   }
 
   function toggleMulti(v: string) {
-    const novo = multi.includes(v) ? multi.filter((x) => x !== v) : [...multi, v];
+    const jaSel = multi.includes(v);
+    // Respect maxSelecoes: ignore extra picks, but always allow unselecting.
+    if (!jaSel && pergunta.maxSelecoes && multi.length >= pergunta.maxSelecoes) return;
+    const novo = jaSel ? multi.filter((x) => x !== v) : [...multi, v];
     setMulti(novo);
     onChange(novo);
   }
@@ -132,19 +135,29 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
         </div>
       );
 
-    case "escolha_multipla":
+    case "escolha_multipla": {
+      const min = pergunta.minSelecoes ?? (pergunta.obrigatoria ? 1 : 0);
+      const max = pergunta.maxSelecoes;
+      const noLimite = max !== undefined && multi.length >= max;
+      const faltam = min - multi.length;
       return (
         <div className="space-y-4">
           <div className="space-y-2">
             {pergunta.opcoes?.map((o) => {
               const sel = multi.includes(o.valor);
+              const bloqueada = !sel && noLimite;
               return (
                 <button
                   key={o.valor}
                   onClick={() => toggleMulti(o.valor)}
+                  disabled={bloqueada}
                   className={cn(
                     "flex w-full items-center justify-between rounded-xl border-2 p-4 text-left transition-all",
-                    sel ? "border-indigo-600 bg-indigo-50 text-indigo-700" : "border-slate-200 hover:border-indigo-300",
+                    sel
+                      ? "border-indigo-600 bg-indigo-50 text-indigo-700"
+                      : bloqueada
+                        ? "border-slate-200 opacity-40 cursor-not-allowed"
+                        : "border-slate-200 hover:border-indigo-300",
                   )}
                 >
                   <span className="flex-1 pr-2">
@@ -156,11 +169,18 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
               );
             })}
           </div>
-          <Button onClick={onAvancar} disabled={pergunta.obrigatoria && multi.length === 0} className="w-full h-12">
-            Continuar
+          {max !== undefined && (
+            <p className="text-center text-xs text-slate-500">
+              {multi.length} de {max} selecionada(s)
+              {noLimite && " — desmarque uma para trocar"}
+            </p>
+          )}
+          <Button onClick={onAvancar} disabled={multi.length < min} className="w-full h-12">
+            {faltam > 0 ? `Selecione ${faltam} ${faltam === 1 ? "opção" : "opções"}` : "Continuar"}
           </Button>
         </div>
       );
+    }
 
     case "escala": {
       const min = pergunta.escalaMin ?? 1;

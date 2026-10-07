@@ -31,6 +31,9 @@ export interface Pergunta {
   dica?: string;
   escalaLabels?: string[];
   obrigatoria?: boolean;
+  // For "escolha_multipla": how many options must / may be selected.
+  minSelecoes?: number;
+  maxSelecoes?: number;
   // Conditional: only show this question if the predicate over current answers is true.
   condicao?: (respostas: Respostas) => boolean;
   // If answering this triggers a critical alert, describe it.

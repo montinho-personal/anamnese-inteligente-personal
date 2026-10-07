@@ -476,7 +476,9 @@ export const PERGUNTAS: Pergunta[] = [
     ],
   },
   {
-    id: "zona_repeticoes", secao: "historico", titulo: "Zona de repetições preferida", descricao: "Pode escolher mais de uma opção", tipo: "escolha_multipla",
+    id: "zona_repeticoes", secao: "historico", titulo: "Zona de repetições preferida", descricao: "Escolha 2 faixas", tipo: "escolha_multipla",
+    obrigatoria: true, minSelecoes: 2, maxSelecoes: 2,
+    dica: "Marque as duas faixas em que você mais gosta de treinar. Ajuda a montar o volume e a intensidade do seu treino.",
     opcoes: [
       { valor: "6-8", label: "6-8 reps" },
       { valor: "8-10", label: "8-10 reps" },
@@ -870,9 +872,14 @@ export function calcularProgresso(respostas: Respostas): number {
 /** Whether every required visible question has been answered. */
 export function anamneseCompleta(respostas: Respostas): boolean {
   return perguntasVisiveis(respostas).every((p) => {
-    if (!p.obrigatoria) return true;
     const r = respostas[p.id];
-    return Array.isArray(r) ? r.length > 0 : r !== undefined && r !== null && r !== "";
+    if (Array.isArray(r)) {
+      // A multi-select may require a minimum number of picks.
+      const min = p.minSelecoes ?? (p.obrigatoria ? 1 : 0);
+      return r.length >= min;
+    }
+    if (!p.obrigatoria) return true;
+    return r !== undefined && r !== null && r !== "";
   });
 }
 
