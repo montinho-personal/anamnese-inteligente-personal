@@ -47,6 +47,24 @@ const REGIOES_ORTO: { valor: string; label: string }[] = [
   { valor: "tornozelo", label: "Tornozelo" },
 ];
 
+// Movement patterns that map onto the exercise database, so the AI can cross-
+// reference them against specific exercises when building the "avoid" list.
+const MOVIMENTOS_PIORA: { valor: string; label: string }[] = [
+  { valor: "agachar", label: "Agachar ou flexionar o joelho" },
+  { valor: "empurrar_cima", label: "Empurrar acima da cabeça (desenvolvimento)" },
+  { valor: "empurrar_frente", label: "Empurrar à frente (supino, flexão)" },
+  { valor: "puxar", label: "Puxar (remada, puxada, barra)" },
+  { valor: "levantar_chao", label: "Levantar peso do chão (terra, stiff)" },
+  { valor: "girar_tronco", label: "Girar ou rotacionar o tronco" },
+  { valor: "impacto", label: "Correr, pular ou impacto" },
+  { valor: "amplitude_total", label: "Amplitude completa do movimento" },
+  { valor: "carga_alta", label: "Qualquer carga mais pesada" },
+  { valor: "muito_sentado", label: "Ficar muito tempo sentado" },
+  { valor: "muito_em_pe", label: "Ficar muito tempo em pé" },
+  { valor: "alongar", label: "Alongar a região" },
+  { valor: "nenhum_especifico", label: "Nenhum movimento específico" },
+];
+
 // Build the deep orthopedic investigation tree for each selected region.
 function perguntasOrtoRegiao(regiao: { valor: string; label: string }): Pergunta[] {
   const cond = (r: Respostas) => regioesDor(r).includes(regiao.valor);
@@ -103,11 +121,22 @@ function perguntasOrtoRegiao(regiao: { valor: string; label: string }): Pergunta
       condicao: (r) => cond(r) && r[`orto_${regiao.valor}_dor_atual`] === "sim",
     },
     {
+      id: `orto_${regiao.valor}_movimentos_piora`,
+      secao: "ortopedica",
+      titulo: `Quais movimentos pioram a dor em ${regiao.label.toLowerCase()}?`,
+      descricao: "Pode escolher mais de uma opção",
+      tipo: "escolha_multipla",
+      opcoes: MOVIMENTOS_PIORA,
+      dica: "Isso ajuda a identificar exatamente quais exercícios adaptar ou evitar no seu treino.",
+      condicao: (r) => cond(r) && r[`orto_${regiao.valor}_dor_atual`] === "sim",
+      obrigatoria: true,
+    },
+    {
       id: `orto_${regiao.valor}_piora`,
       secao: "ortopedica",
-      titulo: "O que piora a dor?",
+      titulo: `Quer detalhar mais sobre o que piora em ${regiao.label.toLowerCase()}?`,
       tipo: "texto",
-      dica: "Ex.: subir escadas, levantar o braço acima da cabeça, sentar por muito tempo...",
+      dica: "Ex.: subir escadas, levantar o braço acima da cabeça, sentar por muito tempo... Se já respondeu acima, pode pular.",
       condicao: (r) => cond(r) && r[`orto_${regiao.valor}_dor_atual`] === "sim",
     },
     {
@@ -437,7 +466,7 @@ export const PERGUNTAS: Pergunta[] = [
   { id: "exercicios_favoritos", secao: "historico", titulo: "Quais exercícios você mais gosta?", tipo: "texto", dica: "Ex.: agachamento, supino, corrida, natação..." },
   { id: "exercicios_nao_gosta", secao: "historico", titulo: "Quais você não gosta?", tipo: "texto", dica: "Ex.: burpee, leg press, esteira. Seja honesto — isso ajuda muito!" },
   { id: "exercicios_medo", secao: "historico", titulo: "Algum exercício te causa medo?", tipo: "texto", dica: "Ex.: agachamento com barra, levantamento terra. Se não, pode escrever 'Nenhum'." },
-  { id: "exercicios_desconforto", secao: "historico", titulo: "Algum exercício causa desconforto físico?", tipo: "texto", dica: "Ex.: rosca direta dói no cotovelo, agachamento dói no joelho. Se nenhum, escreva 'Nenhum'." },
+  { id: "exercicios_desconforto", secao: "historico", titulo: "Algum exercício causa desconforto físico?", tipo: "texto", obrigatoria: true, dica: "Ex.: rosca direta dói no cotovelo, agachamento dói no joelho. Se nenhum, escreva 'Nenhum'." },
   {
     id: "maquinas_ou_livre", secao: "historico", titulo: "Você prefere máquinas ou peso livre?", tipo: "escolha_unica",
     opcoes: [

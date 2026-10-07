@@ -10,11 +10,17 @@ export function montarPromptEstrategia(
     "objetivos", "nivel_experiencia", "dias_disponiveis", "tempo_sessao",
     "local_treino", "orto_regioes", "cardio_itens", "peso", "altura",
     "sono_horas", "estresse", "fadiga",
+    "exercicios_desconforto", "exercicios_medo", "exercicios_nao_gosta",
+    "exercicios_favoritos", "maquinas_ou_livre",
   ];
+
+  // Movement patterns that worsen pain have per-region dynamic ids.
+  const relevante = (id: string) =>
+    camposRelevantes.includes(id) || id.endsWith("_movimentos_piora");
 
   const linhas: string[] = [];
   for (const p of PERGUNTAS) {
-    if (!camposRelevantes.includes(p.id)) continue;
+    if (!relevante(p.id)) continue;
     const r = respostas[p.id];
     if (r === undefined || r === null || r === "") continue;
     const valor = Array.isArray(r) ? r.join(", ") : String(r);
