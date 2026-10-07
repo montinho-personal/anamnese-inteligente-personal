@@ -78,26 +78,36 @@ export async function POST(req: Request, { params }: { params: { token: string }
   const anamnese = anamneseData as Anamnese | null;
   if (!anamnese) return NextResponse.json({ error: "Anamnese não encontrada" }, { status: 404 });
 
-  const progresso = calcularProgresso(respostas);
-  const completa = finalizar && anamneseCompleta(respostas);
+  // Merge over what is already stored. A client that posts a partial payload
+  // (fresh tab, stale state, retry) must never wipe answers already saved.
+  const anteriores = (anamnese.respostas as Respostas) ?? {};
+  const mescladas: Respostas = { ...anteriores, ...respostas };
+
+  const progresso = calcularProgresso(mescladas);
+  const jaConcluida = anamnese.status === "concluida";
+  const completa = finalizar && anamneseCompleta(mescladas);
+  // A finished anamnese stays finished: a late autosave must not reopen it.
+  const novoStatus = completa || jaConcluida ? "concluida" : "em_progresso";
 
   await supabase
     .from("anamneses")
     .update({
-      respostas,
+      respostas: mescladas,
       progresso_percentual: progresso,
-      status: completa ? "concluida" : "em_progresso",
+      status: novoStatus,
       iniciada_em: anamnese.iniciada_em ?? new Date().toISOString(),
-      concluida_em: completa ? new Date().toISOString() : null,
+      concluida_em: completa ? new Date().toISOString() : (anamnese.concluida_em ?? null),
     })
     .eq("id", anamnese.id);
 
-  if (completa) {
+  // Side effects only on the transition into "concluida", so a double tap on
+  // Finalizar cannot duplicate the report or the alerts.
+  if (completa && !jaConcluida) {
     // Mark student active.
     await supabase.from("alunos").update({ status: "ativo" }).eq("id", aluno.id);
 
     // Create triggered alerts (cardiovascular = critical) BEFORE returning.
-    const alertas = avaliarAlertas(respostas);
+    const alertas = avaliarAlertas(mescladas);
     if (alertas.length > 0) {
       await supabase.from("alertas").insert(
         alertas.map((a) => ({

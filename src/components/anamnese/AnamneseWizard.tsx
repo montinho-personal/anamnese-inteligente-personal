@@ -11,6 +11,8 @@ import {
   perguntasVisiveis,
   calcularProgresso,
   anamneseCompleta,
+  perguntaRespondida,
+  primeiraPendenciaIndex,
   SECOES,
 } from "@/lib/anamnese/flow-engine";
 import {
@@ -29,20 +31,19 @@ interface Props {
   respostasIniciais: Respostas;
 }
 
-const RESUME_TTL_MS = 60_000; // 1 minuto
-
 function storageKey(token: string) {
   return `anamnese_pos_${token}`;
 }
 
+/** Last position on this device, or -1 when there is none. Never expires. */
 function lerPosicaoSalva(token: string): number {
   try {
     const raw = localStorage.getItem(storageKey(token));
-    if (!raw) return 0;
-    const { indice, ts } = JSON.parse(raw) as { indice: number; ts: number };
-    if (Date.now() - ts < RESUME_TTL_MS) return indice;
+    if (!raw) return -1;
+    const { indice } = JSON.parse(raw) as { indice: number };
+    return typeof indice === "number" && indice >= 0 ? indice : -1;
   } catch { /* ignore */ }
-  return 0;
+  return -1;
 }
 
 function salvarPosicao(token: string, indice: number) {
@@ -63,16 +64,16 @@ export function AnamneseWizard({ token, nomeAluno, respostasIniciais }: Props) {
   const [direcao, setDirecao] = useState(1);
   const salvarTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // On mount: check localStorage — resume only if within 1 minute
+  // On mount: resume where the student stopped. Saved answers are never
+  // discarded — the stored position is only a shortcut back to the right spot,
+  // and the first unanswered question is the fallback on a new device.
   useEffect(() => {
-    const pos = lerPosicaoSalva(token);
-    if (pos > 0) {
-      setIndice(pos);
-    } else {
-      // Fresh start — clear answers so user fills from scratch
-      setRespostas({});
-    }
-  }, [token]);
+    const total = perguntasVisiveis(respostasIniciais).length;
+    const salva = lerPosicaoSalva(token);
+    const pendencia = primeiraPendenciaIndex(respostasIniciais);
+    const alvo = salva >= 0 ? salva : pendencia;
+    if (alvo > 0 && total > 0) setIndice(Math.min(alvo, total - 1));
+  }, [token, respostasIniciais]);
 
   // Persist position whenever it changes
   useEffect(() => {
@@ -124,6 +125,12 @@ export function AnamneseWizard({ token, nomeAluno, respostasIniciais }: Props) {
 
   async function finalizar() {
     setSalvando(true);
+    // Drop any debounced autosave: if it landed after this request it would
+    // flip the anamnese back to "em_progresso".
+    if (salvarTimer.current) {
+      clearTimeout(salvarTimer.current);
+      salvarTimer.current = null;
+    }
     try {
       const res = await fetch(`/api/anamnese/${token}`, {
         method: "POST",
@@ -136,9 +143,11 @@ export function AnamneseWizard({ token, nomeAluno, respostasIniciais }: Props) {
         router.push(`/anamnese/${token}/obrigado`);
         return;
       }
-      // Not complete yet — jump to first unanswered required question.
+      // Not complete yet — jump to the first required question still missing.
+      // Uses the same rule as the engine, so a multi-select short of its
+      // minimum is caught too (not just a blank one).
       const v = perguntasVisiveis(respostas);
-      const idx = v.findIndex((p) => p.obrigatoria && respostas[p.id] === undefined);
+      const idx = v.findIndex((p) => p.obrigatoria && !perguntaRespondida(p, respostas));
       if (idx !== -1) setIndice(idx);
     } finally {
       setSalvando(false);

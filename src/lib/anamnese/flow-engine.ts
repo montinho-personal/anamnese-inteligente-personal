@@ -870,17 +870,29 @@ export function calcularProgresso(respostas: Respostas): number {
 }
 
 /** Whether every required visible question has been answered. */
+export function perguntaRespondida(p: Pergunta, respostas: Respostas): boolean {
+  const r = respostas[p.id];
+  if (Array.isArray(r)) {
+    // A multi-select may require a minimum number of picks.
+    const min = p.minSelecoes ?? (p.obrigatoria ? 1 : 0);
+    return r.length >= min;
+  }
+  if (!p.obrigatoria) return r !== undefined;
+  return r !== undefined && r !== null && r !== "";
+}
+
 export function anamneseCompleta(respostas: Respostas): boolean {
-  return perguntasVisiveis(respostas).every((p) => {
-    const r = respostas[p.id];
-    if (Array.isArray(r)) {
-      // A multi-select may require a minimum number of picks.
-      const min = p.minSelecoes ?? (p.obrigatoria ? 1 : 0);
-      return r.length >= min;
-    }
-    if (!p.obrigatoria) return true;
-    return r !== undefined && r !== null && r !== "";
-  });
+  return perguntasVisiveis(respostas).every(
+    (p) => !p.obrigatoria || perguntaRespondida(p, respostas),
+  );
+}
+
+/**
+ * Index of the first visible question still needing an answer, or -1 if none.
+ * Used to drop a returning student exactly where they stopped.
+ */
+export function primeiraPendenciaIndex(respostas: Respostas): number {
+  return perguntasVisiveis(respostas).findIndex((p) => !perguntaRespondida(p, respostas));
 }
 
 /**
