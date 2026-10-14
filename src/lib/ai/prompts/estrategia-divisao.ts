@@ -12,6 +12,7 @@ export function montarPromptEstrategia(
     "sono_horas", "estresse", "fadiga",
     "exercicios_desconforto", "exercicios_medo", "exercicios_nao_gosta",
     "exercicios_favoritos", "maquinas_ou_livre",
+    "fase_hormonal", "menopausa_sintomas",
   ];
 
   // Movement patterns that worsen pain have per-region dynamic ids.

@@ -780,6 +780,33 @@ export const PERGUNTAS: Pergunta[] = [
     condicao: (r) => r["usa_medicamento"] === "sim",
   },
   {
+    id: "fase_hormonal", secao: "nutricao", titulo: "Em qual fase hormonal você está?", tipo: "escolha_unica", obrigatoria: true,
+    dica: "Cada fase muda força, recuperação, sono e composição corporal. Isso ajusta o seu treino.",
+    opcoes: [
+      { valor: "regular", label: "Ciclo menstrual regular" },
+      { valor: "irregular", label: "Ciclo menstrual irregular" },
+      { valor: "perimenopausa", label: "Pré-menopausa / perimenopausa", descricao: "O ciclo está mudando e começaram sintomas como ondas de calor ou sono pior." },
+      { valor: "menopausa", label: "Menopausa", descricao: "Sem menstruar há mais de 12 meses." },
+      { valor: "sem_menstruacao", label: "Não menstruo por outro motivo", descricao: "DIU hormonal, cirurgia, gestação, amamentação..." },
+    ],
+    condicao: (r) => r["sexo"] === "F",
+  },
+  {
+    id: "menopausa_sintomas", secao: "nutricao", titulo: "Quais sintomas você sente nessa fase?", descricao: "Pode escolher mais de uma opção", tipo: "escolha_multipla", obrigatoria: true,
+    dica: "Ajuda a ajustar volume, intensidade e recuperação do treino.",
+    opcoes: [
+      { valor: "ondas_calor", label: "Ondas de calor / suor noturno" },
+      { valor: "sono_ruim", label: "Sono ruim ou insônia" },
+      { valor: "gordura_abdominal", label: "Ganho de gordura na barriga" },
+      { valor: "dores_articulares", label: "Dores nas articulações" },
+      { valor: "perda_forca", label: "Perda de força ou massa muscular" },
+      { valor: "humor", label: "Alteração de humor, ansiedade ou irritabilidade" },
+      { valor: "baixa_energia", label: "Cansaço ou pouca energia" },
+      { valor: "nenhum", label: "Nenhum sintoma relevante" },
+    ],
+    condicao: (r) => r["sexo"] === "F" && (r["fase_hormonal"] === "perimenopausa" || r["fase_hormonal"] === "menopausa"),
+  },
+  {
     id: "anticoncepcional", secao: "nutricao", titulo: "Você usa anticoncepcional ou faz reposição hormonal?", tipo: "escolha_unica",
     dica: "Hormônios femininos influenciam diretamente na retenção hídrica, disposição, força e composição corporal ao longo do ciclo.",
     opcoes: [
@@ -804,7 +831,9 @@ export const PERGUNTAS: Pergunta[] = [
       { valor: "dor", label: "Tenho muita cólica ou dor que impede o treino" },
       { valor: "varios", label: "Vários desses impactos" },
     ],
-    condicao: (r) => r["sexo"] === "F",
+    // Only for women who still menstruate (an unanswered phase keeps old behavior).
+    condicao: (r) =>
+      r["sexo"] === "F" && r["fase_hormonal"] !== "menopausa" && r["fase_hormonal"] !== "sem_menstruacao",
   },
 
   {
