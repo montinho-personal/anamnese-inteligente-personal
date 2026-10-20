@@ -10,7 +10,8 @@ export type TipoPergunta =
   | "escala"
   | "sim_nao"
   | "data"
-  | "email";
+  | "email"
+  | "telefone";
 
 export interface OpcaoPergunta {
   valor: string;

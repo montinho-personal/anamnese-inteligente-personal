@@ -35,6 +35,24 @@ export function formatarDataNascimento(dataNascimento: string | null): string | 
   return m ? `${m[3]}/${m[2]}/${m[1]}` : null;
 }
 
+/**
+ * Brazilian WhatsApp number → "+55 DD NNNNN-NNNN" (or 8-digit landline style),
+ * or null when it can't be a valid number. Accepts any punctuation and an
+ * optional leading 55.
+ */
+export function normalizarWhatsapp(valor: unknown): string | null {
+  if (typeof valor !== "string") return null;
+  let d = valor.replace(/\D/g, "");
+  if (d.length === 10 || d.length === 11) d = "55" + d;
+  if (!d.startsWith("55") || (d.length !== 12 && d.length !== 13)) return null;
+  const ddd = d.slice(2, 4);
+  if (ddd.startsWith("0")) return null;
+  const num = d.slice(4);
+  if (num.length === 9 && !num.startsWith("9")) return null;
+  const corte = num.length - 4;
+  return `+55 ${ddd} ${num.slice(0, corte)}-${num.slice(corte)}`;
+}
+
 export function emailValido(email: unknown): email is string {
   return typeof email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
 }

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { cn, calcularIdade, emailValido } from "@/lib/utils";
+import { cn, calcularIdade, emailValido, normalizarWhatsapp } from "@/lib/utils";
 import { Check } from "lucide-react";
 import type { Pergunta, RespostaValor } from "@/types/anamnese";
 
@@ -20,11 +20,16 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
     typeof valor === "string" || typeof valor === "number" ? String(valor) : "",
   );
   const [multi, setMulti] = useState<string[]>(Array.isArray(valor) ? valor : []);
+  const [tentou, setTentou] = useState(false);
 
   useEffect(() => {
     setTexto(typeof valor === "string" || typeof valor === "number" ? String(valor) : "");
     setMulti(Array.isArray(valor) ? valor : []);
   }, [pergunta.id, valor]);
+
+  useEffect(() => {
+    setTentou(false);
+  }, [pergunta.id]);
 
   function commitTexto() {
     onChange(pergunta.tipo === "numero" ? Number(texto) : texto);
@@ -48,29 +53,43 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
   // Render by type
   switch (pergunta.tipo) {
     case "data":
-    case "email": {
+    case "email":
+    case "telefone": {
       const ehData = pergunta.tipo === "data";
-      const valido = ehData ? calcularIdade(texto) !== null : emailValido(texto);
-      const erro = texto.trim() && !valido
-        ? ehData ? "Confira a data de nascimento." : "Confira o e-mail digitado."
+      const ehTelefone = pergunta.tipo === "telefone";
+      const normalizado = ehData
+        ? (calcularIdade(texto) !== null ? texto : null)
+        : ehTelefone
+          ? normalizarWhatsapp(texto)
+          : (emailValido(texto) ? texto.trim().toLowerCase() : null);
+      const valido = normalizado !== null;
+      // Only complain once they leave the field or try to continue, not mid-typing.
+      const erro = tentou && texto.trim() && !valido
+        ? ehData
+          ? "Confira a data de nascimento."
+          : ehTelefone
+            ? "Confira o número: DDD + número, ex.: (11) 98765-4321."
+            : "Confira o e-mail digitado."
         : null;
       const confirmar = () => {
-        if (!valido) return;
-        onChange(ehData ? texto : texto.trim().toLowerCase());
+        setTentou(true);
+        if (!normalizado) return;
+        onChange(normalizado);
         onAvancar();
       };
       return (
         <div className="space-y-4">
           <Input
             autoFocus
-            type={ehData ? "date" : "email"}
-            inputMode={ehData ? undefined : "email"}
-            autoComplete={ehData ? "bday" : "email"}
+            type={ehData ? "date" : ehTelefone ? "tel" : "email"}
+            inputMode={ehData ? undefined : ehTelefone ? "tel" : "email"}
+            autoComplete={ehData ? "bday" : ehTelefone ? "tel" : "email"}
             max={ehData ? new Date().toISOString().slice(0, 10) : undefined}
             min={ehData ? "1910-01-01" : undefined}
             value={texto}
             placeholder={pergunta.placeholder}
             onChange={(e) => setTexto(e.target.value)}
+            onBlur={() => setTentou(true)}
             onKeyDown={(e) => {
               if (e.key === "Enter") confirmar();
             }}

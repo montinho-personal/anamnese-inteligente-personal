@@ -296,6 +296,7 @@ export const PERGUNTAS: Pergunta[] = [
   { id: "nome", secao: "identificacao", titulo: "Qual é o seu nome?", tipo: "texto", obrigatoria: true, placeholder: "Seu nome completo", dica: "Ex.: João Silva" },
   { id: "data_nascimento", secao: "identificacao", titulo: "Qual a sua data de nascimento?", tipo: "data", obrigatoria: true, dica: "Usamos para calcular sua idade e acompanhar sua evolução." },
   { id: "email", secao: "identificacao", titulo: "Qual o seu e-mail?", tipo: "email", obrigatoria: true, placeholder: "seuemail@exemplo.com", dica: "Ex.: joao.silva@gmail.com" },
+  { id: "whatsapp", secao: "identificacao", titulo: "Qual o seu WhatsApp?", tipo: "telefone", obrigatoria: true, placeholder: "(11) 98765-4321", dica: "Com DDD. É por onde seu personal vai falar com você." },
   // Age is derived from data_nascimento on save. Never shown, but kept so older
   // answers and the AI prompt still carry it.
   { id: "idade", secao: "identificacao", titulo: "Idade", tipo: "numero", condicao: () => false },
