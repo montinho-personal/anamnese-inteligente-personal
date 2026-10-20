@@ -6,6 +6,7 @@ import {
   anamneseCompleta,
   avaliarAlertas,
 } from "@/lib/anamnese/flow-engine";
+import { calcularIdade, emailValido } from "@/lib/utils";
 import type { Respostas } from "@/types/anamnese";
 import type { Aluno, Anamnese } from "@/types/database";
 
@@ -82,6 +83,25 @@ export async function POST(req: Request, { params }: { params: { token: string }
   // (fresh tab, stale state, retry) must never wipe answers already saved.
   const anteriores = (anamnese.respostas as Respostas) ?? {};
   const mescladas: Respostas = { ...anteriores, ...respostas };
+
+  // Age comes from the birth date, so it never goes stale or disagrees with it.
+  const idade = calcularIdade(mescladas["data_nascimento"]);
+  if (idade !== null) mescladas["idade"] = idade;
+
+  // The student's own registration data feeds the student record.
+  const cadastro: Partial<Pick<Aluno, "email" | "idade" | "data_nascimento">> = {};
+  if (emailValido(mescladas["email"])) {
+    const email = mescladas["email"].trim().toLowerCase();
+    if (email !== aluno.email) cadastro.email = email;
+  }
+  if (idade !== null) {
+    const nascimento = mescladas["data_nascimento"] as string;
+    if (nascimento !== aluno.data_nascimento) cadastro.data_nascimento = nascimento;
+    if (idade !== aluno.idade) cadastro.idade = idade;
+  }
+  if (Object.keys(cadastro).length > 0) {
+    await supabase.from("alunos").update(cadastro).eq("id", aluno.id);
+  }
 
   const progresso = calcularProgresso(mescladas);
   const jaConcluida = anamnese.status === "concluida";

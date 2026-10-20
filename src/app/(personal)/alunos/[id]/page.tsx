@@ -8,7 +8,7 @@ import { CopyLink } from "@/components/dashboard/copy-link";
 import { SolicitarReavaliacaoButton } from "@/components/dashboard/solicitar-reavaliacao-button";
 import { StatusSelector } from "@/components/dashboard/status-selector";
 import { ObservacoesSection } from "@/components/dashboard/observacoes-section";
-import { iniciais, formatarData } from "@/lib/utils";
+import { iniciais, formatarData, formatarDataNascimento } from "@/lib/utils";
 import { ArrowLeft, FileText, Activity, History, Link2, Pencil } from "lucide-react";
 import type { Aluno, Anamnese, Relatorio, Observacao } from "@/types/database";
 
@@ -100,6 +100,7 @@ export default async function AlunoPage({ params }: { params: { id: string } }) 
             </Button>
           </CardHeader>
           <CardContent className="space-y-2 text-sm">
+            <Linha label="Nascimento" valor={formatarDataNascimento(aluno.data_nascimento)} />
             <Linha label="E-mail" valor={aluno.email} />
             <Linha label="Telefone" valor={aluno.telefone} />
             <Linha label="WhatsApp" valor={aluno.whatsapp} />

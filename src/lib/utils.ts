@@ -14,6 +14,31 @@ export function formatarData(iso: string | null): string {
   });
 }
 
+const DATA_ISO = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/** Age in whole years from a "YYYY-MM-DD" birth date, or null when invalid. */
+export function calcularIdade(dataNascimento: unknown, hoje: Date = new Date()): number | null {
+  if (typeof dataNascimento !== "string") return null;
+  const m = DATA_ISO.exec(dataNascimento);
+  if (!m) return null;
+  const [ano, mes, dia] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  let idade = hoje.getFullYear() - ano;
+  const aindaNaoFezAniversario =
+    hoje.getMonth() + 1 < mes || (hoje.getMonth() + 1 === mes && hoje.getDate() < dia);
+  if (aindaNaoFezAniversario) idade -= 1;
+  return idade >= 5 && idade <= 110 ? idade : null;
+}
+
+/** "YYYY-MM-DD" → "DD/MM/YYYY" without timezone shifts. */
+export function formatarDataNascimento(dataNascimento: string | null): string | null {
+  const m = dataNascimento ? DATA_ISO.exec(dataNascimento) : null;
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : null;
+}
+
+export function emailValido(email: unknown): email is string {
+  return typeof email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
+}
+
 export function diasDesde(iso: string | null): number {
   if (!iso) return Infinity;
   const ms = Date.now() - new Date(iso).getTime();

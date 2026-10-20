@@ -8,7 +8,9 @@ export type TipoPergunta =
   | "escolha_unica"
   | "escolha_multipla"
   | "escala"
-  | "sim_nao";
+  | "sim_nao"
+  | "data"
+  | "email";
 
 export interface OpcaoPergunta {
   valor: string;

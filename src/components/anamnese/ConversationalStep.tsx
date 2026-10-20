@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, calcularIdade, emailValido } from "@/lib/utils";
 import { Check } from "lucide-react";
 import type { Pergunta, RespostaValor } from "@/types/anamnese";
 
@@ -47,6 +47,53 @@ export function ConversationalStep({ pergunta, valor, onChange, onAvancar }: Pro
 
   // Render by type
   switch (pergunta.tipo) {
+    case "data":
+    case "email": {
+      const ehData = pergunta.tipo === "data";
+      const valido = ehData ? calcularIdade(texto) !== null : emailValido(texto);
+      const erro = texto.trim() && !valido
+        ? ehData ? "Confira a data de nascimento." : "Confira o e-mail digitado."
+        : null;
+      const confirmar = () => {
+        if (!valido) return;
+        onChange(ehData ? texto : texto.trim().toLowerCase());
+        onAvancar();
+      };
+      return (
+        <div className="space-y-4">
+          <Input
+            autoFocus
+            type={ehData ? "date" : "email"}
+            inputMode={ehData ? undefined : "email"}
+            autoComplete={ehData ? "bday" : "email"}
+            max={ehData ? new Date().toISOString().slice(0, 10) : undefined}
+            min={ehData ? "1910-01-01" : undefined}
+            value={texto}
+            placeholder={pergunta.placeholder}
+            onChange={(e) => setTexto(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") confirmar();
+            }}
+            className="h-14 text-lg"
+          />
+          {erro && <p className="text-sm text-red-500">{erro}</p>}
+          {ehData && valido && (
+            <p className="text-sm text-slate-500">{calcularIdade(texto)} anos</p>
+          )}
+          {pergunta.dica && (
+            <p className="text-sm text-slate-400 leading-relaxed">💡 {pergunta.dica}</p>
+          )}
+          <Button
+            onClick={confirmar}
+            disabled={pergunta.obrigatoria ? !valido : Boolean(texto.trim()) && !valido}
+            className="w-full h-12"
+          >
+            Continuar
+          </Button>
+        </div>
+      );
+    }
+
     case "texto":
     case "numero":
       return (

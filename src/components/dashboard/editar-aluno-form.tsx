@@ -106,8 +106,14 @@ export function EditarAlunoForm({ aluno }: { aluno: Aluno }) {
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="idade">Idade</Label>
-                <Input id="idade" name="idade" type="number" defaultValue={aluno.idade ?? ""} />
+                <Label htmlFor="data_nascimento">Data de nascimento</Label>
+                <Input
+                  id="data_nascimento"
+                  name="data_nascimento"
+                  type="date"
+                  max={new Date().toISOString().slice(0, 10)}
+                  defaultValue={aluno.data_nascimento ?? ""}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="altura_cm">Altura (cm)</Label>

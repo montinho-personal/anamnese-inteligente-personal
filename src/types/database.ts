@@ -37,6 +37,7 @@ export interface Aluno {
   telefone: string | null;
   whatsapp: string | null;
   idade: number | null;
+  data_nascimento: string | null;
   sexo: SexoAluno | null;
   altura_cm: number | null;
   peso_kg: number | null;

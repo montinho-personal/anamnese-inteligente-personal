@@ -294,7 +294,11 @@ function perguntasDesvio(desvio: { valor: string; label: string }): Pergunta[] {
 export const PERGUNTAS: Pergunta[] = [
   // IDENTIFICAÇÃO
   { id: "nome", secao: "identificacao", titulo: "Qual é o seu nome?", tipo: "texto", obrigatoria: true, placeholder: "Seu nome completo", dica: "Ex.: João Silva" },
-  { id: "idade", secao: "identificacao", titulo: "Quantos anos você tem?", tipo: "numero", obrigatoria: true, dica: "Ex.: 28" },
+  { id: "data_nascimento", secao: "identificacao", titulo: "Qual a sua data de nascimento?", tipo: "data", obrigatoria: true, dica: "Usamos para calcular sua idade e acompanhar sua evolução." },
+  { id: "email", secao: "identificacao", titulo: "Qual o seu e-mail?", tipo: "email", obrigatoria: true, placeholder: "seuemail@exemplo.com", dica: "Ex.: joao.silva@gmail.com" },
+  // Age is derived from data_nascimento on save. Never shown, but kept so older
+  // answers and the AI prompt still carry it.
+  { id: "idade", secao: "identificacao", titulo: "Idade", tipo: "numero", condicao: () => false },
   {
     id: "sexo", secao: "identificacao", titulo: "Sexo biológico", tipo: "escolha_unica", obrigatoria: true,
     opcoes: [
