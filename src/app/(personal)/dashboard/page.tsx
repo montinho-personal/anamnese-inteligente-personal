@@ -132,7 +132,7 @@ export default async function DashboardPage() {
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-primary text-xs font-semibold">
                   {iniciais(aluno.nome)}
                 </div>
-                <span className="flex-1 text-sm font-medium truncate">{aluno.nome}</span>
+                <span className="flex-1 min-w-0 text-sm font-medium truncate">{aluno.nome}</span>
                 <Badge variant={aluno.status === "ativo" ? "success" : aluno.status === "inativo" ? "muted" : "secondary"}>
                   {aluno.status}
                 </Badge>

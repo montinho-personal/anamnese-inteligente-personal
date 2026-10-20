@@ -81,9 +81,10 @@ export function AlunosLista({ alunos }: { alunos: Aluno[] }) {
           {busca ? `Nenhum aluno encontrado para "${busca}".` : "Nenhum aluno cadastrado."}
         </p>
       ) : (
-        <div className="grid gap-3">
+        <div className="grid grid-cols-1 gap-3">
           {filtrados.map((aluno) => (
-            <Link key={aluno.id} href={`/alunos/${aluno.id}`}>
+            // min-w-0: a grid item otherwise grows to its nowrap text and spills off-screen.
+            <Link key={aluno.id} href={`/alunos/${aluno.id}`} className="block min-w-0">
               <Card className="hover:border-primary/50 transition-colors">
                 <CardContent className="flex items-center gap-4 p-4">
                   <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/15 text-primary font-semibold shrink-0">
@@ -96,6 +97,7 @@ export function AlunosLista({ alunos }: { alunos: Aluno[] }) {
                     </p>
                   </div>
                   <Badge
+                    className="shrink-0"
                     variant={
                       aluno.status === "ativo" ? "success" : aluno.status === "inativo" ? "muted" : "secondary"
                     }

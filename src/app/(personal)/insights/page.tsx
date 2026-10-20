@@ -79,7 +79,7 @@ export default async function InsightsPage() {
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 text-primary text-xs font-semibold">
                           {iniciais(aluno.nome)}
                         </div>
-                        <span className="flex-1 text-sm truncate">{aluno.nome}</span>
+                        <span className="flex-1 min-w-0 text-sm truncate">{aluno.nome}</span>
                         <span className="text-xs text-muted-foreground">{diasDesde(a.updated_at)}d</span>
                       </Link>
                     );
