@@ -468,6 +468,26 @@ export const PERGUNTAS: Pergunta[] = [
       { valor: "mais_3a", label: "Mais de 3 anos" },
     ],
   },
+  {
+    id: "treina_atualmente", secao: "historico", titulo: "Você está treinando atualmente?", tipo: "escolha_unica", obrigatoria: true,
+    dica: "Quem está parado precisa de um início mais gradual, mesmo já tendo experiência.",
+    opcoes: [
+      { valor: "treinando", label: "Sim, estou treinando" },
+      { valor: "parado", label: "Não, estou parado(a)" },
+    ],
+    condicao: (r) => r["tempo_treino"] !== undefined && r["tempo_treino"] !== "nunca",
+  },
+  {
+    id: "tempo_parado", secao: "historico", titulo: "Há quanto tempo você está parado(a)?", tipo: "escolha_unica", obrigatoria: true,
+    opcoes: [
+      { valor: "menos_1m", label: "Menos de 1 mês" },
+      { valor: "1_3m", label: "1 a 3 meses" },
+      { valor: "3_6m", label: "3 a 6 meses" },
+      { valor: "6m_1a", label: "6 meses a 1 ano" },
+      { valor: "mais_1a", label: "Mais de 1 ano" },
+    ],
+    condicao: (r) => r["treina_atualmente"] === "parado" && r["tempo_treino"] !== "nunca",
+  },
   { id: "exercicios_favoritos", secao: "historico", titulo: "Quais exercícios você mais gosta?", tipo: "texto", dica: "Ex.: agachamento, supino, corrida, natação..." },
   { id: "exercicios_nao_gosta", secao: "historico", titulo: "Quais você não gosta?", tipo: "texto", dica: "Ex.: burpee, leg press, esteira. Seja honesto — isso ajuda muito!" },
   { id: "exercicios_medo", secao: "historico", titulo: "Algum exercício te causa medo?", tipo: "texto", dica: "Ex.: agachamento com barra, levantamento terra. Se não, pode escrever 'Nenhum'." },
@@ -872,6 +892,18 @@ export const PERGUNTAS: Pergunta[] = [
 // ---------------------------------------------------------------------------
 
 /** Returns the ordered list of questions visible given the current answers. */
+/**
+ * Human-readable text for a stored answer, using the option labels the student
+ * saw (e.g. "mais_3a" → "Mais de 3 anos"). Null when unanswered.
+ */
+export function rotuloResposta(id: string, valor: RespostaValor | undefined): string | null {
+  if (valor === undefined || valor === null || valor === "") return null;
+  const opcoes = PERGUNTAS.find((p) => p.id === id)?.opcoes;
+  const rotulo = (v: string) => opcoes?.find((o) => o.valor === v)?.label ?? v;
+  if (Array.isArray(valor)) return valor.length ? valor.map(rotulo).join(", ") : null;
+  return rotulo(String(valor));
+}
+
 export function perguntasVisiveis(respostas: Respostas): Pergunta[] {
   return PERGUNTAS.filter((p) => !p.condicao || p.condicao(respostas));
 }

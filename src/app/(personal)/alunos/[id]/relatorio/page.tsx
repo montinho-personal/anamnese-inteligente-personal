@@ -8,6 +8,8 @@ import { RegerarButton } from "@/components/relatorio/regerar-button";
 import { RelatorioChat } from "@/components/relatorio/RelatorioChat";
 import { BaixarPdfButton } from "@/components/relatorio/BaixarPdfButton";
 import { DivisaoExpandida } from "@/components/relatorio/DivisaoExpandida";
+import { DadosBasicos } from "@/components/relatorio/dados-basicos";
+import type { Respostas } from "@/types/anamnese";
 import {
   ArrowLeft, FileText, Award, ShieldAlert, TrendingDown, Brain,
   Map, Dumbbell, Ban, Wind, LayoutGrid, BarChart3, CalendarRange, Target, HeartHandshake, Trophy, PersonStanding, TrendingUp,
@@ -35,6 +37,12 @@ export default async function RelatorioPage({ params }: { params: { id: string }
     .maybeSingle();
   if (relError) console.error("[RelatorioPage] DB error:", relError);
   const r = relData as Relatorio | null;
+
+  // Answers of the anamnese this report was built from, for the "Dados básicos" block.
+  const { data: anamneseData } = r
+    ? await supabase.from("anamneses").select("respostas").eq("id", r.anamnese_id).maybeSingle()
+    : { data: null };
+  const respostas = ((anamneseData as { respostas: Respostas } | null)?.respostas ?? {}) as Respostas;
 
   // Debug log — visible in Vercel Function logs
   if (r) {
@@ -88,6 +96,8 @@ export default async function RelatorioPage({ params }: { params: { id: string }
           <SecaoRelatorio titulo="Resumo executivo" icon={FileText}>
             <p className="whitespace-pre-line">{r.resumo_executivo}</p>
           </SecaoRelatorio>
+
+          <DadosBasicos respostas={respostas} />
 
           {r.classificacao && (
             <SecaoRelatorio titulo="Classificação" icon={Award}>
